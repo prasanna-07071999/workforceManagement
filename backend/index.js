@@ -324,7 +324,7 @@ const errorHandler = (err, req, res, next) => {
 
 const clientOrigin =
   process.env.NODE_ENV === "production"
-    ? (process.env.CLIENT_ORIGIN_PROD || "https://your.prod.client")
+    ? (process.env.CLIENT_ORIGIN_PROD || "https://workforcemanagement-frontend.onrender.com")
     : (process.env.CLIENT_ORIGIN_DEV || "http://localhost:3000");
 
 app.use(
@@ -338,12 +338,6 @@ app.use(
 
 // Public health route
 app.get("/", (req, res) => res.send(`HRMS API (env: ${env})`));
-
-// -----------------------------
-// AUTH ROUTES
-// POST /api/auth/register
-// POST /api/auth/login
-// -----------------------------
 
 app.post("/api/auth/register", async (req, res) => {
   try {
@@ -784,9 +778,6 @@ app.get("/api/stats/summary", authMiddleware, async (req, res) => {
   }
 });
 
-// -----------------------------
-// Error handler & start server
-// -----------------------------
 app.use(errorHandler);
 
 // Run seed and start server
