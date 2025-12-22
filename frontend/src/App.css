@@ -1,0 +1,40 @@
+/* Global layout */
+body {
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app-container {
+  min-height: 100vh;
+  padding-top: 40px;
+}
+
+
+.page-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+
+.card {
+  border-radius: 12px;
+}
+
+
+.form-control {
+  height: 44px;
+}
+
+.btn-primary {
+  height: 44px;
+  font-weight: 500;
+}
+
+
+.table thead th {
+  background-color: #e9ecef;
+  font-weight: 600;
+}
