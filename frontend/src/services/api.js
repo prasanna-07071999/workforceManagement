@@ -28,21 +28,3 @@ export async function apiPost(path, body) {
 
   return response.json();
 }
-
-
-
-// import axios from "axios";
-
-// const api = axios.create({
-//   baseURL: "https://hrms-backend-s6la.onrender.com/api",
-// });
-
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("token");
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
-
-// export default api;
