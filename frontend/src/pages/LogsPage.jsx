@@ -59,13 +59,13 @@ const LogsPage = () => {
           <tr>
             <th>ID</th>
             <th>User</th>
-            <th>Organisation</th>
-            <th>Action</th>
-            <th>Event</th>
+            <th style={{width:"200px"}}>Organisation</th>
+            <th style={{width:"80px", whiteSpace: 'nowrap'}}>Action</th>
+            <th style={{width:"80px", whiteSpace:'nowrap'}}>Event</th>
             <th>Status</th>
             <th>IP</th>
             <th>Date</th>
-            <th>Time</th>
+            <th style={{width: "100px"}}>Time</th>
           </tr>
         </thead>
 
@@ -81,8 +81,8 @@ const LogsPage = () => {
               <tr key={log._id}>
                 <td>{log._id}</td>
                 <td>
-                  {log.User
-                    ? `${log.User.name} (${log.User.email})`
+                  {log.userId
+                    ? `${log.userId.name} (${log.userId.email})`
                     : "System"}
                 </td>
 
@@ -99,7 +99,7 @@ const LogsPage = () => {
                 <td>{log.status}</td>
 
                 <td>{log.ip}</td>
-                
+
                 <td>
                   {log.timestamp
                     ? new Date(log.timestamp).toLocaleDateString()

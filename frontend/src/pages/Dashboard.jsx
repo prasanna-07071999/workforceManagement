@@ -82,8 +82,6 @@ const Dashboard = () => {
 
   return (
     <div className="container my-4">
-
-      {/* USER CARD */}
       <div className="card shadow-sm p-4 mb-4" style={{ borderRadius: "15px" }}>
         <div className="d-flex justify-content-between align-items-center">
           <div>
