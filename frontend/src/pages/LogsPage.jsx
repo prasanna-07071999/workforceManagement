@@ -64,7 +64,8 @@ const LogsPage = () => {
             <th>Event</th>
             <th>Status</th>
             <th>IP</th>
-            <th>Date & Time</th>
+            <th>Date</th>
+            <th>Time</th>
           </tr>
         </thead>
 
@@ -77,9 +78,8 @@ const LogsPage = () => {
             </tr>
           ) : (
             logs.map((log) => (
-              <tr key={log.id}>
-                <td>{log.id}</td>
-
+              <tr key={log._id}>
+                <td>{log._id}</td>
                 <td>
                   {log.User
                     ? `${log.User.name} (${log.User.email})`
@@ -87,7 +87,7 @@ const LogsPage = () => {
                 </td>
 
                 <td>
-                  {log.Organisation ? log.Organisation.name : "N/A"}
+                  {log.organisationId && log.organisationId.name ? log.organisationId.name : "N/A"}
                 </td>
 
                 <td>{log.action}</td>
@@ -99,12 +99,18 @@ const LogsPage = () => {
                 <td>{log.status}</td>
 
                 <td>{log.ip}</td>
-
+                
                 <td>
                   {log.timestamp
-                    ? new Date(log.timestamp).toLocaleString()
+                    ? new Date(log.timestamp).toLocaleDateString()
                     : ""}
                 </td>
+
+                  <td>
+                    {log.timestamp
+                      ? new Date(log.timestamp).toLocaleTimeString()
+                      : ""}
+                  </td>
               </tr>
             ))
           )}
