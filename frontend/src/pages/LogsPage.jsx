@@ -47,76 +47,59 @@ const LogsPage = () => {
 
   return (
     <div className="container-fluid mt-4 px-4">
-      <div className="d-flex flex-row justify-content-between">
-        <h2 className="mb-0">System Logs</h2>
-          <BackButton />
-      </div>
+  <div className="d-flex justify-content-between align-items-center">
+    <h2 className="mb-0">System Logs</h2>
+    <BackButton />
+  </div>
 
-      {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
+  {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
 
-      <table className="table table-bordered mt-3 text-center">
-        <thead>
+  <div className="table-responsive mt-3">
+    <table className="table table-bordered text-center">
+      <thead>
+        <tr>
+          <th>Log ID</th>
+          <th>User</th>
+          <th>Organisation</th>
+          <th>Action</th>
+          <th>Event</th>
+          <th>Status</th>
+          <th>IP</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {logs.length === 0 ? (
           <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Organisation</th>
-            <th>Action</th>
-            <th>Event</th>
-            <th>Status</th>
-            <th>IP</th>
-            <th>Date</th>
-            <th>Time</th>
+            <td colSpan="9">No logs found.</td>
           </tr>
-        </thead>
-
-        <tbody>
-          {logs.length === 0 ? (
-            <tr>
-              <td colSpan="8" className="text-center">
-                No logs found.
+        ) : (
+          logs.map((log) => (
+            <tr key={log._id}>
+              <td>{log._id.slice(-6)}</td>
+              <td>
+                {log.userId
+                  ? `${log.userId.name} (${log.userId.email})`
+                  : "System"}
               </td>
+              <td>{log.organisationId?.name || "N/A"}</td>
+              <td>{log.action}</td>
+              <td>
+                <span className="badge bg-primary">{log.event}</span>
+              </td>
+              <td>{log.status}</td>
+              <td>{log.ip}</td>
+              <td>{new Date(log.timestamp).toLocaleDateString()}</td>
+              <td>{new Date(log.timestamp).toLocaleTimeString()}</td>
             </tr>
-          ) : (
-            logs.map((log) => (
-              <tr key={log._id}>
-                <td>{log._id}</td>
-                <td>
-                  {log.userId
-                    ? `${log.userId.name} (${log.userId.email})`
-                    : "System"}
-                </td>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
 
-                <td>
-                  {log.organisationId && log.organisationId.name ? log.organisationId.name : "N/A"}
-                </td>
-
-                <td>{log.action}</td>
-
-                <td>
-                  <span className="badge bg-primary">{log.event}</span>
-                </td>
-
-                <td>{log.status}</td>
-
-                <td>{log.ip}</td>
-
-                <td>
-                  {log.timestamp
-                    ? new Date(log.timestamp).toLocaleDateString()
-                    : ""}
-                </td>
-
-                  <td>
-                    {log.timestamp
-                      ? new Date(log.timestamp).toLocaleTimeString()
-                      : ""}
-                  </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
   );
 };
 
