@@ -99,9 +99,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* STATS */}
       <div className="row g-3 mb-4">
-
         <div className="col-md-4">
           <div className="card p-3 shadow-sm text-center">
             <i className="bi bi-people-fill fs-2 text-primary"></i>

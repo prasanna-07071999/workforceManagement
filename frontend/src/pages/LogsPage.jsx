@@ -46,10 +46,12 @@ const LogsPage = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="container-fluid mt-4 px-4">
       <div className="d-flex flex-row justify-content-between">
-        <h2>System Logs</h2>
-        <BackButton />
+        <h2 className="mb-0">System Logs</h2>
+        <div className="mb-0">
+          <BackButton />
+        </div>
       </div>
 
       {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
@@ -59,13 +61,13 @@ const LogsPage = () => {
           <tr>
             <th>ID</th>
             <th>User</th>
-            <th style={{width:"200px"}}>Organisation</th>
-            <th style={{width:"80px", whiteSpace: 'nowrap'}}>Action</th>
-            <th style={{width:"80px", whiteSpace:'nowrap'}}>Event</th>
+            <th>Organisation</th>
+            <th>Action</th>
+            <th>Event</th>
             <th>Status</th>
             <th>IP</th>
             <th>Date</th>
-            <th style={{width: "100px"}}>Time</th>
+            <th>Time</th>
           </tr>
         </thead>
 

@@ -341,7 +341,7 @@ app.get("/", (req, res) => res.send(`HRMS API (env: ${env})`));
 
 app.post("/api/auth/register", async (req, res) => {
   try {
-    const { orgName, adminName, email, password, isAdmin } = req.body;
+    const { orgName, adminName, email, password } = req.body;
     if (!orgName || !adminName || !email || !password) {
       return res.status(400).json({ message: "orgName, adminName, email and password required" });
     }
@@ -358,7 +358,7 @@ app.post("/api/auth/register", async (req, res) => {
       email,
       passwordHash,
       name: adminName,
-      isAdmin: Boolean(isAdmin)
+      isAdmin: true
     });
 
     const token = jwt.sign(
@@ -368,7 +368,7 @@ app.post("/api/auth/register", async (req, res) => {
             email: user.email,
             organisationId: org._id.toString(),
             organisationName: org.name,
-            isAdmin: user.isAdmin
+            isAdmin: true
         },
         JWT_SECRET,
         { expiresIn: "8h" }
@@ -384,7 +384,7 @@ app.post("/api/auth/register", async (req, res) => {
       userId: user._id
     });
 
-    res.status(201).json({ token, isAdmin: user.isAdmin });
+    res.status(201).json({ token, isAdmin: true });
   } catch (err) {
     console.error("Register error:", err);
     res.status(500).json({ message: "Registration Failed", error: err.message });
