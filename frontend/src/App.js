@@ -32,7 +32,7 @@ const App = () => {
       <BrowserRouter>
         <Navbar />
           <Switch>
-            <Route exact path='/login' component={Login}/>
+            <Route exact path='/' component={Login}/>
             <Route exact path='/register' component={RegisterOrg}/>
             <ProtectedRoute exact path='/dashboard' component={Dashboard} />
             <ProtectedRoute exact path='/employees' component={Employees}/>
@@ -40,7 +40,7 @@ const App = () => {
             <ProtectedRoute exact path="/teams/:teamId/assign" component={TeamAssignment} />
             <ProtectedRoute exact path="/teams/:teamId/assign" component={TeamAssignment} />
             <ProtectedRoute exact path="/logs" component={LogsPage} />
-            <Redirect to="/register" />
+            <Redirect to="/" />
           </Switch>
       </BrowserRouter>
     </AuthProvider>

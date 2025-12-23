@@ -49,9 +49,7 @@ const LogsPage = () => {
     <div className="container-fluid mt-4 px-4">
       <div className="d-flex flex-row justify-content-between">
         <h2 className="mb-0">System Logs</h2>
-        <div className="mb-0">
           <BackButton />
-        </div>
       </div>
 
       {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}

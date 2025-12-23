@@ -33,62 +33,86 @@ const Login = () => {
     }
 
     return (
-        <div>
-            <h1 className="text-primary text-center pt-5">Human Resourse Management System</h1>
-            <div className="container  pt-5 d-flex flex-row justify-content-center">
-                <div className="col-6 p-3">
-                    <h1>Welcome to the HR Management System</h1>
-                    <p className="text-secondary">
-                        Our HR Management System is designed to simplify workforce operations and empower 
-                        both employees and managers. With intuitive tools for onboarding, team management, 
-                        attendance tracking, and more, HRMS helps your organization run smoothly while keeping 
-                        all your HR data secure and accessible in one place.
-                    </p>
-                </div>
-                <div className="card p-4 shadow col-6 mt-0">
-                    <h1 className="text-center mb-4">Login</h1>
+  <div
+    className="container-fluid vh-100 d-flex align-items-center justify-content-center"
+    style={{ background: "#f3f6fa" }}
+  >
+    <div className="row bg-white shadow rounded-4 w-75 overflow-hidden">
 
-                    {errorMsg && (
-                    <div className="alert alert-danger">{errorMsg}</div>
-                    )}
+      {/* LEFT INFO PANEL */}
+      <div
+        className="col-md-6 d-flex flex-column justify-content-center p-5 text-white"
+        style={{ backgroundColor: "#16558f" }}
+      >
+        <h2 className="fw-bold mb-3">WorkPulse</h2>
 
-                    <form onSubmit={handleLogin}>
-                        <div className="mb-3">
-                            <label className="form-label">Email</label>
-                            <input 
-                                type="email"
-                                className="form-control"
-                                value={email}
-                                onChange={(event) => setEmail(event.target.value)}
-                                required 
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">Password</label>
-                            <input 
-                                type="password"
-                                className="form-control"
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                required 
-                            />
-                        </div>
-                        <div>
-                            <button className="btn btn-primary w-100" type="submit">
-                                Login
-                            </button>
-                        </div>
-                    </form>
-                   <div className="text-center mt-2">
-                        <p className="fw-bold btn btn-outline-dark">
-                            Don't have an account? <a href="/register" className="text-primary">Register</a>
-                        </p>
-                    </div>
-                </div>
+        <p className="mb-4">
+          A workforce management platform that enables organizations to
+          manage employees and teams with secure, role-based access.
+        </p>
+
+        <ul className="small ps-3 mb-0">
+          <li className="mb-2">Admin & Employee login</li>
+          <li className="mb-2">Secure authentication using JWT</li>
+          <li className="mb-2">Employee and team management</li>
+          <li className="mb-2">Audit logs for administrative actions</li>
+        </ul>
+      </div>
+
+      {/* RIGHT LOGIN FORM */}
+      <div className="col-md-6 p-5">
+        <h4 className="fw-bold text-center mb-1">Login</h4>
+        <p className="text-muted text-center mb-4 small">
+          Sign in to access your organization workspace
+        </p>
+
+        {errorMsg && (
+          <div className="alert alert-danger">{errorMsg}</div>
+        )}
+
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@company.com"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+              required
+            />
+          </div>
+
+          <button className="btn btn-primary w-100 mb-3">
+            Login
+          </button>
+        </form>
+
+        <div className="text-center mt-3">
+          <span className="small text-muted">
+            New organization?
+          </span>
+          <a href="/register" className="ms-1">
+            Register here
+          </a>
         </div>
+      </div>
     </div>
-        
-    )
+  </div>
+);
+
 }
 
 export default Login;
