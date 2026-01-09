@@ -12,6 +12,7 @@ const Login = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault()
+        setErrorMsg("");
         try {
             const url = `${BASE_URL}/api/auth/login`
             const options = {
@@ -26,22 +27,22 @@ const Login = () => {
                 return
             }
             setToken(data.token)
-            history.push("/dashboard");
+            history.push("/dashboard"); 
         }catch (error) {
         setErrorMsg("Something went wrong")
         }
     }
 
-    return (
+return (
   <div
-    className="container-fluid vh-100 d-flex align-items-center justify-content-center"
+    className="container-fluid vh-100 d-flex align-items-center justify-content-center px-2"
     style={{ background: "#f3f6fa" }}
   >
-    <div className="row bg-white shadow rounded-4 w-75 overflow-hidden">
+    <div className="row bg-white shadow rounded-4 w-100 w-md-75 overflow-hidden">
 
-      {/* LEFT INFO PANEL */}
+      {/* LEFT INFO PANEL (HIDDEN ON MOBILE) */}
       <div
-        className="col-md-6 d-flex flex-column justify-content-center p-5 text-white"
+        className="col-md-6 d-none d-md-flex flex-column justify-content-center p-5 text-white"
         style={{ backgroundColor: "#16558f" }}
       >
         <h2 className="fw-bold mb-3">WorkPulse</h2>
@@ -60,11 +61,19 @@ const Login = () => {
       </div>
 
       {/* RIGHT LOGIN FORM */}
-      <div className="col-md-6 p-5">
+      <div className="col-12 col-md-6 p-4 p-md-5">
         <h4 className="fw-bold text-center mb-1">Login</h4>
         <p className="text-muted text-center mb-4 small">
           Sign in to access your organization workspace
         </p>
+
+        {/* MOBILE REGISTER LINK */}
+        <div className="d-md-none text-center mb-3">
+          <small className="text-muted">
+            New organization?
+            <a href="/register" className="ms-1">Register here</a>
+          </small>
+        </div>
 
         {errorMsg && (
           <div className="alert alert-danger">{errorMsg}</div>
@@ -100,10 +109,9 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="text-center mt-3">
-          <span className="small text-muted">
-            New organization?
-          </span>
+        {/* DESKTOP REGISTER LINK */}
+        <div className="text-center mt-3 d-none d-md-block">
+          <span className="small text-muted">New organization?</span>
           <a href="/register" className="ms-1">
             Register here
           </a>

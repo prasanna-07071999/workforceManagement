@@ -1,65 +1,91 @@
-##############################################
-# AUTH APIs
-##############################################
+@BASE_URL = http://localhost:5000
+@ADMIN_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRlNzM0OWZjMzc1MTgzNGQzYjRkOWQiLCJuYW1lIjoiQWRtaW4gUHJhc2FubmEiLCJlbWFpbCI6ImFkbWluQGJhc2FudC5jb20iLCJvcmdhbmlzYXRpb25JZCI6IjY5NGU3MzQ4ZmMzNzUxODM0ZDNiNGQ5OSIsIm9yZ2FuaXNhdGlvbk5hbWUiOiJCYXNhbnQgVGVjaG5vbG9naWVzIiwiaXNBZG1pbiI6dHJ1ZSwiaWF0IjoxNzY3OTI1NDk1LCJleHAiOjE3Njc5NTQyOTV9.iqoGrkmDUz5r9cV2Ic2NKTAVLixaWww7-kSPb0R4fsI
+@EMPLOYEE_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTYwNjc2NzQ3ZjRhM2MxYTI1NzRkOGQiLCJuYW1lIjoiUmFtYUtyaXNobmEgUmVkZHkiLCJlbWFpbCI6InJhbWFrcmlzaG5hQGJhc2FudC5jb20iLCJvcmdhbmlzYXRpb25JZCI6IjY5NGU3MzQ4ZmMzNzUxODM0ZDNiNGQ5OSIsIm9yZ2FuaXNhdGlvbk5hbWUiOiJCYXNhbnQgVGVjaG5vbG9naWVzIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTc2NzkyNTY2NiwiZXhwIjoxNzY3OTU0NDY2fQ.rJ7XpGsplNbYoT5HkU17wSSD6irCCte971NUULK0uqA
 
-### Register Organisation + Admin
-POST http://localhost:5000/api/auth/register
+
+### Register Organisation + Admin (one-time)
+POST {{BASE_URL}}/api/auth/register
 Content-Type: application/json
 
 {
-  "orgName": "Sai",
-  "adminName": "Sai",
-  "email": "admin@sai.com",
-  "password": "Sai123",
+  "orgName": "Rama Organisations",
+  "adminName": "RamaDevi",
+  "email": "admin@Ramadevi.com",
+  "password": "Rama123",
   "isAdmin": true
 }
 
 ###
 
-### Login
-POST http://localhost:5000/api/auth/login
+### Admin Login
+POST {{BASE_URL}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin1@basanttech.com",
-  "password": "Password123"
+  "email": "admin@basant.com",
+  "password": "Admin@123"
 }
 
 ###
 
-################################################
-# EMPLOYEE APIs
-################################################
+### Employee Login
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
 
-### List all employees
-GET http://localhost:5000/api/employees
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+{
+  "email": "ramakrishna@basant.com",
+  "password": "123456789"
+}
+
+###
+
+### Change Password (Employee – first login)
+POST {{BASE_URL}}/api/auth/change-password
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+Content-Type: application/json
+
+{
+  "newPassword": "NewStrong@123"
+}
+
+############################################
+# 👑 ADMIN APIs
+############################################
+
+############################################
+# 👥 Employee Management
+############################################
+
+### Get all employees
+GET {{BASE_URL}}/api/employees
+Authorization: Bearer {{ADMIN_TOKEN}}
 
 ###
 
 ### Get employee by ID
-GET http://localhost:5000/api/employees/69394ea0c4c86d24f21de0f8
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+GET {{BASE_URL}}/api/employees/694e7349fc3751834d3b4d9f
+Authorization: Bearer {{ADMIN_TOKEN}}
 
 ###
 
-### Create employee
-POST http://localhost:5000/api/employees
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+### Create employee (with temp password)
+POST {{BASE_URL}}/api/employees
+Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 
 {
-  "firstName": "Sunil",
-  "lastName": "Kumar",
-  "email": "sunilkumar@sai.com",
-  "phone": "7894785960"
+  "firstName": "RamaKrishna",
+  "lastName": "Reddy",
+  "email": "ramakrishna@basant.com",
+  "phone": "7894785960",
+  "password": "123456789"
 }
 
 ###
 
 ### Update employee
-PUT http://localhost:5000/api/employees/6947e62dfb93349531f7e14b
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+PUT {{BASE_URL}}/api/employees/6960676747f4a3c1a2574d8f
+Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 
 {
@@ -69,111 +95,219 @@ Content-Type: application/json
 ###
 
 ### Delete employee
-DELETE http://localhost:5000/api/employees/6947dc885d87284e875aa2da
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+DELETE {{BASE_URL}}/api/employees/695f9545b41217cffc6dbb96
+Authorization: Bearer {{ADMIN_TOKEN}}
 
-###
+############################################
+# 👥 Team Management
+############################################
 
-################################################
-# TEAM APIs
-################################################
-
-### List all teams
-GET http://localhost:5000/api/teams
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+### Get all teams
+GET {{BASE_URL}}/api/teams
+Authorization: Bearer {{ADMIN_TOKEN}}
 
 ###
 
 ### Get team by ID
-GET http://localhost:5000/api/teams/69394ea0c4c86d24f21de0fe
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+GET {{BASE_URL}}/api/teams/695f94b7b41217cffc6dbb74
+Authorization: Bearer {{ADMIN_TOKEN}}
 
 ###
 
 ### Create team
-POST http://localhost:5000/api/teams
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+POST {{BASE_URL}}/api/teams
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
 
 {
-  "name": "HR Team",
-  "description": "HR Team handles employee data and processes"
+  "name": "Medical Department",
+  "description": "Need to check all employees health related issues and suggest precautions"
 }
 
 ###
 
 ### Update team
-PUT http://localhost:5000/api/teams/69394ea0c4c86d24f21de0fe
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+PUT {{BASE_URL}}/api/teams/696068a847f4a3c1a2574dc4
+Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 
 {
-  "description": "Basant team updated description"
+  "description": "Need to check all employees health related issues and suggest precautions based on their health status."
 }
 
 ###
 
 ### Delete team
-DELETE http://localhost:5000/api/teams/69394ea0c4c86d24f21de0fe
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjMxNzA4MSwiZXhwIjoxNzY2MzQ1ODgxfQ.y-yoWVkCWhbe9Lq-Pcu648TU3b01cYQh2gT11Q8P4OI
+DELETE {{BASE_URL}}/api/teams/6960684747f4a3c1a2574dbb
+Authorization: Bearer {{ADMIN_TOKEN}}
 
-###
+############################################
+# 🔗 Team Assignment
+############################################
 
-################################################
-# TEAM ASSIGNMENT APIs
-################################################
-
-### Assign multiple employees to a team
-POST http://localhost:5000/api/teams/69394ea0c4c86d24f21de0fe/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJvcmdhbmlzYXRpb25JZCI6IjY5Mzk0ZWEwYzRjODZkMjRmMjFkZTBlZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NTM2Mzk3MSwiZXhwIjoxNzY1MzkyNzcxfQ.ScymJ7KfRR5Yqw6rYhH4sqpFe8PO9zmGxKJrd4Rw5QM
+### Assign employee to team
+POST {{BASE_URL}}/api/teams/694e79c3d06a5cac4f9977ed/assign
+Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 
 {
-  "employeeIds": ["69394ea0c4c86d24f21de0f8", "69394ea0c4c86d24f21de0fa"]
-}
-
-###
-
-### Assign single employee to a team
-POST http://localhost:5000/api/teams/69394ea0c4c86d24f21de0fe/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJvcmdhbmlzYXRpb25JZCI6IjY5Mzk0ZWEwYzRjODZkMjRmMjFkZTBlZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NTM2Mzk3MSwiZXhwIjoxNzY1MzkyNzcxfQ.ScymJ7KfRR5Yqw6rYhH4sqpFe8PO9zmGxKJrd4Rw5QM
-Content-Type: application/json
-
-{
-  "employeeId": "69394ea0c4c86d24f21de0fa"
+  "employeeId": "6954d2ca2630abc8bd714868"
 }
 
 ###
 
 ### Unassign employee from team
-DELETE http://localhost:5000/api/teams/69394ea0c4c86d24f21de100/unassign
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJvcmdhbmlzYXRpb25JZCI6IjY5Mzk0ZWEwYzRjODZkMjRmMjFkZTBlZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NTM2Mzk3MSwiZXhwIjoxNzY1MzkyNzcxfQ.ScymJ7KfRR5Yqw6rYhH4sqpFe8PO9zmGxKJrd4Rw5QM
+DELETE {{BASE_URL}}/api/teams/694e79c3d06a5cac4f9977ed/unassign
+Authorization: Bearer {{ADMIN_TOKEN}}
 Content-Type: application/json
 
 {
-  "employeeId": "69394ea0c4c86d24f21de0fa"
+  "employeeId": "6954d2ca2630abc8bd714868"
+}
+
+############################################
+# ⏱ Attendance (Admin View)
+############################################
+
+### Get today’s attendance
+GET {{BASE_URL}}/api/attendance/today
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+###
+
+### Attendance summary
+GET {{BASE_URL}}/api/attendance/summary
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+############################################
+# 🌴 Leave Management (Admin)
+############################################
+
+### Get all leave requests
+GET {{BASE_URL}}/api/leaves
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+###
+
+### Approve / Reject leave
+PATCH {{BASE_URL}}/api/leaves/69606ef93ecea8c02124a7cf/status
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "status": "Approved"
+}
+
+############################################
+# 🎉 Holidays
+############################################
+
+### Create holiday
+POST {{BASE_URL}}/api/holidays
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26",
+  "name": "Republic Day"
 }
 
 ###
 
-################################################
-# LOGS (Admins only)
-################################################
-
-### Get Logs
-GET http://localhost:5000/api/logs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJvcmdhbmlzYXRpb25JZCI6IjY5Mzk0ZWEwYzRjODZkMjRmMjFkZTBlZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NTM2Mzk3MSwiZXhwIjoxNzY1MzkyNzcxfQ.ScymJ7KfRR5Yqw6rYhH4sqpFe8PO9zmGxKJrd4Rw5QM
-
-Accept: application/json
+### Get all holidays
+GET {{BASE_URL}}/api/holidays
+Authorization: Bearer {{ADMIN_TOKEN}}
 
 ###
 
-################################################
-# STATS SUMMARY
-################################################
+### Delete holiday
+DELETE {{BASE_URL}}/api/holidays/69606d3b7b29d1058826e4b9
+Authorization: Bearer {{ADMIN_TOKEN}}
 
-### Get Stats Summary
-GET http://localhost:5000/api/stats/summary
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZjQiLCJuYW1lIjoiVG9ueSBBZG1pbiIsImVtYWlsIjoiYWRtaW4xQGJhc2FudHRlY2guY29tIiwib3JnYW5pc2F0aW9uSWQiOiI2OTM5NGVhMGM0Yzg2ZDI0ZjIxZGUwZWUiLCJvcmdhbmlzYXRpb25OYW1lIjoiQmFzYW50IFRlY2hub2xvZ2llcyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc2NjM4Nzg1MSwiZXhwIjoxNzY2NDE2NjUxfQ.PjvrTQveqT4bw4cemIltt7c2yboNSPqUF1N8CYQquEU
-Accept: application/json
+############################################
+# 👤 User Status Management
+############################################
+
+### Update user status
+PATCH {{BASE_URL}}/api/users/6960676747f4a3c1a2574d8d/status
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "status": "Inactive"
+}
+
+############################################
+# 📜 Logs & Stats
+############################################
+
+### Get logs
+GET {{BASE_URL}}/api/logs
+Authorization: Bearer {{ADMIN_TOKEN}}
 
 ###
+
+### Stats summary
+GET {{BASE_URL}}/api/stats/summary
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+############################################
+# 📝 Daily Updates (Admin View)
+############################################
+
+### Get all daily updates
+GET {{BASE_URL}}/api/daily-updates
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+############################################
+# 👨‍💻 EMPLOYEE APIs
+############################################
+
+############################################
+# ⏱ Attendance (Employee)
+############################################
+
+### Mark attendance (check-in / check-out)
+POST {{BASE_URL}}/api/attendance/mark
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+Content-Type: application/json
+
+############################################
+# 🌴 Leaves (Employee)
+############################################
+
+### Apply leave
+POST {{BASE_URL}}/api/leaves
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+Content-Type: application/json
+
+{
+  "fromDate": "2025-01-05",
+  "toDate": "2025-01-07",
+  "reason": "Personal work"
+}
+
+###
+
+### View my leaves
+GET {{BASE_URL}}/api/leaves/my
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+
+############################################
+# 📝 Daily Updates (Employee)
+############################################
+
+### Submit daily update
+POST {{BASE_URL}}/api/daily-updates
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+Content-Type: application/json
+
+{
+  "description": "Worked on dashboard UI"
+}
+
+###
+
+### View my daily updates
+GET {{BASE_URL}}/api/daily-updates/my
+Authorization: Bearer {{EMPLOYEE_TOKEN}}

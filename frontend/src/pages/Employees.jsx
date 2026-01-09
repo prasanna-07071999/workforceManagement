@@ -48,36 +48,40 @@ const Employees = () => {
     };
 
     return (
-        <div className="container mt-4">
+    <div className="container-fluid mt-4 px-2 px-md-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
             <h1>Employees</h1>
         </div>
+
         {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
         {successMsg && <div className="alert alert-success">{successMsg}</div>}
+
         <button className="btn btn-primary mb-3" onClick={handleAddClick}>
-            Add Employee
+        Add Employee
         </button>
+
         <div className="card p-3 shadow">
-            <table className="table table-bordered">
+        <div className="table-responsive">
+            <table className="table table-bordered mb-0">
             <thead className="table-light">
                 <tr>
-                <th>ID</th>
+                <th className="d-none d-md-table-cell">ID</th>
                 <th>Full Name</th>
                 <th>Email</th>
-                <th>Phone</th>
+                <th className="d-none d-lg-table-cell">Phone</th>
                 <th style={{ width: "120px" }}>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {employees.map((emp) => (
                 <tr key={emp._id}>
-                    <td>{emp._id}</td>
+                    <td className="d-none d-md-table-cell">{emp._id}</td>
                     <td>{emp.firstName} {emp.lastName}</td>
-                    <td>{emp.email}</td>
-                    <td>{emp.phone}</td>
+                    <td className="text-break">{emp.email}</td>
+                    <td className="d-none d-lg-table-cell">{emp.phone}</td>
                     <td>
                     <button
-                        className="btn btn-sm btn-secondary"
+                        className="btn btn-sm btn-secondary w-100 w-md-auto"
                         onClick={() => handleEditClick(emp)}
                     >
                         Edit
@@ -87,17 +91,21 @@ const Employees = () => {
                 ))}
             </tbody>
             </table>
-            <BackButton />
         </div>
+
+        <BackButton />
+        </div>
+
         {showForm && (
-            <EmployeeForm
+        <EmployeeForm
             selectedEmployee={selectedEmployee}
             onSuccess={handleFormSuccess}
             onCancel={() => setShowForm(false)}
-            />
+        />
         )}
-        </div>
+    </div>
     );
+
 };
 
 export default Employees

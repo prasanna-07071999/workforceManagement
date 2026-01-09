@@ -1,16 +1,19 @@
-import React from "react"
-import { useHistory } from "react-router-dom"
+import React from "react";
+import { useHistory } from "react-router-dom";
 
 const BackButton = () => {
-    const history = useHistory()
+  const history = useHistory();
 
-    return (
-        <button
-            className="btn btn-secondary mb-3"
-            onClick={() => history.goBack()}
-        >
-            Back
-        </button>
-    )
-}
+  return (
+    <div className="mb-3">
+      <button
+        className="btn btn-secondary w-100 w-md-auto"
+        onClick={() => history.goBack()}
+      >
+        Back
+      </button>
+    </div>
+  );
+};
+
 export default BackButton

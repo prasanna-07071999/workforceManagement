@@ -1,64 +1,66 @@
-import React, { useState, useContext } from "react";
-import { useHistory, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import { BASE_URL } from "../services/api";
+  import React, { useState, useContext } from "react";
+  import { useHistory, Link } from "react-router-dom";
+  import { AuthContext } from "../context/AuthContext";
+  import { BASE_URL } from "../services/api";
 
-const RegisterOrg = () => {
-  const history = useHistory();
-  const { setToken } = useContext(AuthContext);
+  const RegisterOrg = () => {
+    const history = useHistory();
+    const { setToken } = useContext(AuthContext);
 
-  const [orgName, setOrgName] = useState("");
-  const [adminName, setAdminName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const [orgName, setOrgName] = useState("");
+    const [adminName, setAdminName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
 
-  const handleRegister = async (event) => {
-    event.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
+    const handleRegister = async (event) => {
+      event.preventDefault();
+      setErrorMsg("");
+      setSuccessMsg("");
 
-    try {
-      const url = `${BASE_URL}/api/auth/register`;
+      try {
+        const url = `${BASE_URL}/api/auth/register`;
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orgName,
-          adminName,
-          email,
-          password  
-        }),
-      });
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orgName,
+            adminName,
+            email,
+            password  
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        setErrorMsg(data.message || "Registration Failed");
-        return;
+        if (!response.ok) {
+          setErrorMsg(data.message || "Registration Failed");
+          return;
+        }
+
+        setToken(data.token);
+
+        setSuccessMsg("Organization Registered Successfully! Redirecting...");
+        setTimeout(() => history.push("/login"), 1800);
+
+      } catch (error) {
+        setErrorMsg("Something went wrong");
       }
+    };
 
-      setToken(data.token);
-
-      setSuccessMsg("Organization Registered Successfully! Redirecting...");
-      setTimeout(() => history.push("/login"), 1800);
-
-    } catch (error) {
-      setErrorMsg("Something went wrong");
-    }
-  };
-
- return (
+  return (
   <div
-    className="container-fluid vh-100 d-flex align-items-center justify-content-center"
+    className="container-fluid vh-100 d-flex align-items-center justify-content-center px-2"
     style={{ background: "#f3f6fa" }}
   >
-    <div className="row shadow-lg bg-white rounded-4 w-75 overflow-hidden">
+    <div className="row shadow-lg bg-white rounded-4 w-100 w-md-75 overflow-hidden">
+
+      {/* LEFT INFO PANEL (HIDDEN ON MOBILE) */}
       <div
-        className="col-md-6 d-flex flex-column justify-content-center p-5 text-white"
+        className="col-md-6 d-none d-md-flex flex-column justify-content-center p-5 text-white"
         style={{ backgroundColor: "#16558f" }}
       >
         <h2 className="fw-bold mb-3">WorkPulse</h2>
@@ -77,23 +79,28 @@ const RegisterOrg = () => {
 
         <div className="mt-4">
           <span className="small">Already have an account?</span>
-          <Link
-            to="/login"
-            className="btn btn-outline-light btn-sm ms-2"
-          >
+          <Link to="/login" className="btn btn-outline-light btn-sm ms-2">
             Login
           </Link>
         </div>
       </div>
 
       {/* RIGHT FORM PANEL */}
-      <div className="col-md-6 p-5">
+      <div className="col-12 col-md-6 p-4 p-md-5">
         <h4 className="fw-bold mb-1 text-center">
           Create Organization
         </h4>
         <p className="text-muted text-center mb-4 small">
           Admin registration only. Employees are added internally.
         </p>
+
+        {/* MOBILE LOGIN LINK */}
+        <div className="d-md-none text-center mb-3">
+          <small className="text-muted">
+            Already have an account?
+            <Link to="/login" className="ms-1">Login</Link>
+          </small>
+        </div>
 
         {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
         {successMsg && <div className="alert alert-success">{successMsg}</div>}
@@ -155,7 +162,6 @@ const RegisterOrg = () => {
     </div>
   </div>
 );
-
 };
 
 export default RegisterOrg

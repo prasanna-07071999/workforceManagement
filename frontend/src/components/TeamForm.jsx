@@ -79,51 +79,69 @@
     };
 
     return (
-      <div className="card shadow p-4 mt-3">
-        <h4 className="mb-3">
-          {selectedTeam ? "Edit Team" : "Add Team"}
-        </h4>
-        {formState.errorMsg && (
-          <div className="alert alert-danger" id="error-msg">
-            {formState.errorMsg}
-          </div>
-        )}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label" htmlFor="teamName">Team Name</label>
-            <input
-              type="text"
-              id="teamName"
-              className="form-control"
-              value={formState.name}
-              onChange={handleChange("name")}
-              required
-              aria-describedby={formState.errorMsg ? "error-msg" : undefined}
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label" htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              className="form-control"
-              rows="3"
-              value={formState.description}
-              onChange={handleChange("description")}
-              required
-              aria-describedby={formState.errorMsg ? "error-msg" : undefined}
-            />
-          </div>
-          <div className="d-flex justify-content-between">
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>
-              Cancel
-            </button>
-            <button className="btn btn-primary" type="submit" disabled={formState.loading}>
-              {formState.loading ? "Saving..." : "Submit"}
-            </button>
-          </div>
-        </form>
-      </div>
-    );
+    <div className="card shadow p-3 p-md-4 mt-3">
+      <h4 className="mb-3">
+        {selectedTeam ? "Edit Team" : "Add Team"}
+      </h4>
+
+      {formState.errorMsg && (
+        <div className="alert alert-danger" id="error-msg">
+          {formState.errorMsg}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label" htmlFor="teamName">
+            Team Name
+          </label>
+          <input
+            type="text"
+            id="teamName"
+            className="form-control"
+            value={formState.name}
+            onChange={handleChange("name")}
+            required
+            aria-describedby={formState.errorMsg ? "error-msg" : undefined}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label" htmlFor="description">
+            Description
+          </label>
+          <textarea
+            id="description"
+            className="form-control"
+            rows="3"
+            value={formState.description}
+            onChange={handleChange("description")}
+            required
+            aria-describedby={formState.errorMsg ? "error-msg" : undefined}
+          />
+        </div>
+
+        <div className="d-flex flex-column flex-md-row gap-2 justify-content-between">
+          <button
+            type="button"
+            className="btn btn-secondary w-100 w-md-auto"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="btn btn-primary w-100 w-md-auto"
+            type="submit"
+            disabled={formState.loading}
+          >
+            {formState.loading ? "Saving..." : "Submit"}
+          </button>
+        </div>
+      </form>
+    </div>
+);
+
   };
 
   export default TeamForm;

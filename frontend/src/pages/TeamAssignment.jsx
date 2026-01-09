@@ -104,96 +104,102 @@ const TeamAssignment = (props) => {
   );
   
 
-  return (
-    <div className="container mt-4">
-      <h2 className="mb-3">Assign Employees to Team: {teamId}</h2>
+ return (
+  <div className="container-fluid mt-4 px-2 px-md-4">
+    <h2 className="mb-3">Assign Employees to Team: {teamId}</h2>
 
-      <div className="mb-3 d-flex flex-row justify-content-between">
-        <div>
-          <button
-            className="btn btn-primary me-2"
-            onClick={() => props.history.push("/employees")}
-          >
-            Employees
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => props.history.push("/teams")}
-          >
-            Teams
-          </button>
-        </div>
-
-        <BackButton />
+    <div className="mb-3 d-flex flex-column flex-md-row gap-2 justify-content-between">
+      <div className="d-flex gap-2">
+        <button
+          className="btn btn-primary"
+          onClick={() => props.history.push("/employees")}
+        >
+          Employees
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => props.history.push("/teams")}
+        >
+          Teams
+        </button>
       </div>
 
-      <div className="row mt-4">
-        {/* AVAILABLE EMPLOYEES */}
-        <div className="col-md-6">
-          <h4>Available Employees</h4>
-          <div className="border p-3" style={{ minHeight: "250px" }}>
-            {availableEmployees.map((emp) => (
-              <div className="form-check" key={emp.id}>
-                {console.log("EMP OBJECT:", emp)}
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={selectedAssign.includes(emp.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedAssign([...selectedAssign, emp.id]);
-                    } else {
-                      setSelectedAssign(
-                        selectedAssign.filter((id) => id !== emp.id)
-                      );
-                    }
-                  }}
-                />
-                <label className="form-check-label">
-                  {emp.firstName} {emp.lastName} ({emp.email})
-                </label>
-              </div>
-            ))}
-          </div>
-          <button onClick={handleAssign} className="btn btn-success mt-3">
-            Assign Selected
-          </button>
+      <BackButton />
+    </div>
+
+    <div className="row mt-4">
+      {/* AVAILABLE EMPLOYEES */}
+      <div className="col-12 col-md-6 mb-4 mb-md-0">
+        <h4>Available Employees</h4>
+        <div
+          className="border p-2 p-md-3"
+          style={{ minHeight: "250px", maxHeight: "300px", overflowY: "auto" }}
+        >
+          {availableEmployees.map((emp) => (
+            <div className="form-check" key={emp.id}>
+              <input
+                type="checkbox"
+                className="form-check-input"
+                checked={selectedAssign.includes(emp.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedAssign([...selectedAssign, emp.id]);
+                  } else {
+                    setSelectedAssign(
+                      selectedAssign.filter((id) => id !== emp.id)
+                    );
+                  }
+                }}
+              />
+              <label className="form-check-label small text-break">
+                {emp.firstName} {emp.lastName} ({emp.email})
+              </label>
+            </div>
+          ))}
+        </div>
+        <button onClick={handleAssign} className="btn btn-success mt-3 w-100 w-md-auto">
+          Assign Selected
+        </button>
+      </div>
+
+      {/* ASSIGNED EMPLOYEES */}
+      <div className="col-12 col-md-6">
+        <h4>Assigned Employees</h4>
+        <div
+          className="border p-2 p-md-3"
+          style={{ minHeight: "250px", maxHeight: "300px", overflowY: "auto" }}
+        >
+          {teamEmployees.length === 0 && <p>No employees assigned.</p>}
+
+          {teamEmployees.map((emp) => (
+            <div className="form-check" key={emp.id}>
+              <input
+                type="checkbox"
+                className="form-check-input"
+                checked={selectedUnassign.includes(emp.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedUnassign([emp.id]);
+                  } else {
+                    setSelectedUnassign([]);
+                  }
+                }}
+              />
+              <label className="form-check-label small text-break">
+                {emp.firstName} {emp.lastName} ({emp.email})
+              </label>
+            </div>
+          ))}
         </div>
 
-        {/* ASSIGNED EMPLOYEES */}
-        <div className="col-md-6">
-          <h4>Assigned Employees</h4>
-          <div className="border p-3" style={{ minHeight: "250px" }}>
-            {teamEmployees.length === 0 && <p>No employees assigned.</p>}
-
-            {teamEmployees.map((emp) => (
-              <div className="form-check" key={emp.id}>
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={selectedUnassign.includes(emp.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedUnassign([emp.id]);
-                    } else {
-                      setSelectedUnassign([]);
-                    }
-                  }}
-                />
-                <label className="form-check-label">
-                  {emp.firstName} {emp.lastName} ({emp.email})
-                </label>  
-              </div>
-            ))}
-          </div>
-
-          <button onClick={handleUnassign} className="btn btn-danger mt-3">
-            Unassign Selected
-          </button>
-        </div>
+        <button onClick={handleUnassign} className="btn btn-danger mt-3 w-100 w-md-auto">
+          Unassign Selected
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default TeamAssignment

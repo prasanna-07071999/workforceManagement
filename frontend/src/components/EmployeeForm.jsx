@@ -8,6 +8,7 @@ const EmployeeForm = ({ selectedEmployee, onSuccess, onCancel }) => {
     const [phone, setPhone] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(false);
+    const [password, setPassword] = useState("");
 
     useEffect(() => {
         if (selectedEmployee) {
@@ -40,7 +41,8 @@ const EmployeeForm = ({ selectedEmployee, onSuccess, onCancel }) => {
                 firstName,
                 lastName,
                 email,
-                phone
+                phone,
+                ...(selectedEmployee ? {} : { password })
             })
         });
         console.log(response)
@@ -61,65 +63,98 @@ const EmployeeForm = ({ selectedEmployee, onSuccess, onCancel }) => {
     };
 
     return (
-        <div className="card shadow p-4 mt-3">
+    <div className="card shadow p-3 p-md-4 mt-3">
         <h4 className="mb-3">
-            {selectedEmployee ? "Edit Employee" : "Add Employee"}
+        {selectedEmployee ? "Edit Employee" : "Add Employee"}
         </h4>
+
         {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
+
         <form onSubmit={handleSubmit}>
-            <div className="row">
-            <div className="mb-3 col-md-6">
-                <label className="form-label">First Name</label>
-                <input
+        <div className="row">
+            <div className="mb-3 col-12 col-md-6">
+            <label className="form-label">First Name</label>
+            <input
                 type="text"
                 className="form-control"
                 value={firstName || ""}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
-                />
+            />
             </div>
-            <div className="mb-3 col-md-6">
-                <label className="form-label">Last Name</label>
-                <input
+
+            <div className="mb-3 col-12 col-md-6">
+            <label className="form-label">Last Name</label>
+            <input
                 type="text"
                 className="form-control"
-                value={lastName|| ""}
+                value={lastName || ""}
                 onChange={(e) => setLastName(e.target.value)}
                 required
-                />
+            />
             </div>
-            </div>
-            <div className="mb-3">
+        </div>
+
+        <div className="mb-3">
             <label className="form-label">Email</label>
             <input
-                type="email"
+            type="email"
+            className="form-control"
+            value={email || ""}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            />
+        </div>
+
+        {!selectedEmployee && (
+            <div className="mb-3">
+            <label className="form-label">Temporary Password</label>
+            <input
+                type="password"
                 className="form-control"
-                value={email || ''}
-                onChange={(e) => setEmail(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Employee must change on first login"
                 required
             />
+            <small className="text-muted">
+                This password is temporary. Employee will be forced to change it.
+            </small>
             </div>
-            <div className="mb-3">
+        )}
+
+        <div className="mb-3">
             <label className="form-label">Phone</label>
             <input
-                type="text"
-                className="form-control"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
+            type="text"
+            className="form-control"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
             />
-            </div>
-            <div className="d-flex justify-content-between">
-            <button className="btn btn-secondary" type="button" onClick={onCancel}>
-                Cancel
-            </button>
-            <button className="btn btn-primary" type="submit" disabled={loading}>
-                {loading ? "Saving..." : "Submit"}
-            </button>
-            </div>
-        </form>
         </div>
-  );
+
+        <div className="d-flex flex-column flex-md-row gap-2 justify-content-between">
+            <button
+            className="btn btn-secondary w-100 w-md-auto"
+            type="button"
+            onClick={onCancel}
+            >
+            Cancel
+            </button>
+
+            <button
+            className="btn btn-primary w-100 w-md-auto"
+            type="submit"
+            disabled={loading}
+            >
+            {loading ? "Saving..." : "Submit"}
+            </button>
+        </div>
+        </form>
+    </div>
+);
+
 };
 
 export default EmployeeForm
