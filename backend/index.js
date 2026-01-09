@@ -26,16 +26,20 @@ if (!process.env.JWT_SECRET){
 }
 
 const startServer = async () => {
-  try{
-    await connectDB()
-    await seedData()
-    app.listen(PORT, () => {
-      console.log(`WorkPulse is running on ${PORT}`)
-    })
-  } catch(e){
-    console.log("Server Startup Failed", e.message)
-    process.exit(1)
-  }
-}
+  try {
+    await connectDB();
+    
+    if (process.env.NODE_ENV !== "production") {
+      await seedData();
+      console.log("Seed data loaded (development only)");
+    }
 
-startServer()
+    app.listen(PORT, () => {
+      console.log(`WorkPulse is running on ${PORT}`);
+    });
+  } catch (e) {
+    console.log("Server Startup Failed", e.message);
+    process.exit(1);
+  }
+};
+
