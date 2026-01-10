@@ -52,13 +52,17 @@ const Employees = () => {
         <div className="d-flex justify-content-between align-items-center mb-3">
             <h1>Employees</h1>
         </div>
-
+        
         {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
         {successMsg && <div className="alert alert-success">{successMsg}</div>}
 
-        <button className="btn btn-primary mb-3" onClick={handleAddClick}>
-        Add Employee
-        </button>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+            <button className="btn btn-primary mb-3" onClick={handleAddClick}>
+                Add Employee
+            </button>
+            <BackButton />
+        </div>
+        
 
         <div className="card p-3 shadow">
         <div className="table-responsive">
@@ -92,8 +96,6 @@ const Employees = () => {
             </tbody>
             </table>
         </div>
-
-        <BackButton />
         </div>
 
         {showForm && (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BASE_URL } from "../services/api";
-
+import BackButton from "../components/BackButton";
 const Holidays = () => {
   const token = localStorage.getItem("jwt");
 
@@ -73,7 +73,10 @@ const Holidays = () => {
 
   return (
   <div className="container-fluid px-2 px-md-4">
-    <h5 className="fw-bold mb-3">Holidays</h5>
+     <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 className="fw-bold mb-3">Holidays</h4>
+        <BackButton />
+      </div>
 
     {/* ADD HOLIDAY */}
     <form onSubmit={addHoliday} className="row g-2 mb-4">

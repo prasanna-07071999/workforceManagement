@@ -79,7 +79,7 @@ const Dashboard = () => {
         const updates = await updatesRes.json();
 
         const pendingLeaves = leaves.filter(l => l.status === "Pending").length;
-
+        console.log(attendance)
         setAdminStats({
           employees: stats.totalEmployees,
           teams: teams.length,

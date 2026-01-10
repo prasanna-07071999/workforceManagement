@@ -1,8 +1,12 @@
+import BackButton from "../components/BackButton";
+
 const Projects = () => {
   return (
     <div>
-      <h4 className="fw-bold mb-3">Projects</h4>
-
+      <div className="d-flex justify-content-between align-items-center mb-3">
+             <h4 className="fw-bold mb-3">Projects</h4>
+             <BackButton />
+      </div>
       <div className="card p-3 mb-3">
         <h6>Create Project</h6>
         <input className="form-control mb-2" placeholder="Project name" />

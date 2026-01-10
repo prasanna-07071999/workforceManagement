@@ -65,9 +65,13 @@ const Teams = () => {
         {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
         {successMsg && <div className="alert alert-success">{successMsg}</div>}
 
-        <button className="btn btn-primary mb-3" onClick={handleAddClick}>
-            Add Team
-        </button>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+            <button className="btn btn-primary mb-3" onClick={handleAddClick}>
+                Add Team
+            </button>
+            <BackButton />
+        </div>
+       
 
         <div className="card p-3 shadow">
         <div className="table-responsive">
@@ -108,7 +112,6 @@ const Teams = () => {
             </table>
         </div>
 
-        <BackButton />
         </div>
 
         {showForm && (
