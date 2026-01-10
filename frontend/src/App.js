@@ -102,7 +102,9 @@ const App = () => {
           <ProtectedRoute exact path="/holidays" component={Holidays} />
           <ProtectedRoute exact path="/logs" component={LogsPage} />
 
-          <Redirect to="/login" />
+          <Route path="*">
+            <Redirect to="/login" />
+          </Route>
         </Switch>
       </BrowserRouter>
     </AuthProvider>

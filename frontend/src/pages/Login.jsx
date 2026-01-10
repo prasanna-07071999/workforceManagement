@@ -1,6 +1,6 @@
 import React, { useState, useContext} from "react"
 import { AuthContext } from "../context/AuthContext"
-import { useHistory } from "react-router-dom"
+import { useHistory, Link } from "react-router-dom"
 import { BASE_URL } from "../services/api"
 
 const Login = () => {
@@ -78,7 +78,7 @@ return (
         <div className="d-md-none text-center mb-3">
           <small className="text-muted">
             New organization?
-            <a href="/register" className="ms-1">Register here</a>
+            <Link to="/register" className="ms-1">Register here</Link>
           </small>
         </div>
 
@@ -119,9 +119,7 @@ return (
         {/* DESKTOP REGISTER LINK */}
         <div className="text-center mt-3 d-none d-md-block">
           <span className="small text-muted">New organization?</span>
-          <a href="/register" className="ms-1">
-            Register here
-          </a>
+         <Link to="/register" className="ms-1">Register here</Link>
         </div>
       </div>
     </div>
