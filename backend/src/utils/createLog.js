@@ -1,20 +1,46 @@
-const Log = require('../models/Log')
+const Log = require("../models/Log");
 
-const createLog = async ({ req, action, event, status, organisationId, userId }) => {
+const createLog = async ({
+  req,
+  action,
+  event = "SYSTEM",
+  status,
+  organisationId,
+  userId,
+}) => {
   try {
-    const user = (req && req.user) ? req.user : null;
+    const authUser = req?.user;
+
     await Log.create({
-      organisationId: organisationId || (user ? user.organisationId : null),
-      userId: userId || (user ? user.id : null),
-      action: action || `${req ? req.method + " " + req.originalUrl : "SYSTEM"}`,
-      event: event || null,
-      status: status || (req && req.res ? req.res.statusCode : null),
-      ip: req ? (req.headers["x-forwarded-for"] || req.ip || "") : null,
-      timestamp: new Date()
+      organisationId:
+        organisationId ??
+        authUser?.organisationId ??
+        null,
+
+      userId:
+        userId ??
+        authUser?.userId ??
+        null,
+
+      action:
+        action ??
+        `${req?.method ?? "SYSTEM"} ${req?.originalUrl ?? ""}`,
+
+      event,
+
+      status:
+        status ??
+        req?.res?.statusCode ??
+        null,
+
+      ip:
+        req?.headers?.["x-forwarded-for"] ??
+        req?.ip ??
+        null,
     });
   } catch (err) {
     console.error("createLog error:", err.message);
   }
 };
 
-module.exports = createLog
+module.exports = createLog;

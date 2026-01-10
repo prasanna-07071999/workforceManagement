@@ -113,13 +113,6 @@ const login = async (req, res) => {
       });
     }
 
-    console.log("LOGIN SUCCESS:");
-    console.log({
-      email: user.email,
-      mustChangePassword: user.mustChangePassword,
-      isAdmin: user.isAdmin
-    });
-
     res.json({
       token,
       mustChangePassword: user.mustChangePassword,

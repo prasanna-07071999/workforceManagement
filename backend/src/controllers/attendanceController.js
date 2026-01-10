@@ -1,7 +1,8 @@
 const Attendance = require("../models/Attendance");
+const User = require("../models/User");
 const createLog = require("../utils/createLog");
 
-// Helper: get today date
+// Helper: get today date (YYYY-MM-DD)
 const getToday = () => new Date().toISOString().split("T")[0];
 
 /**
@@ -15,7 +16,7 @@ const markAttendance = async (req, res) => {
 
     let attendance = await Attendance.findOne({ userId, date: today });
 
-    // First time → CHECK-IN
+    // FIRST CHECK-IN
     if (!attendance) {
       attendance = await Attendance.create({
         organisationId,
@@ -40,7 +41,7 @@ const markAttendance = async (req, res) => {
       });
     }
 
-    // Already checked in → CHECK-OUT
+    // CHECK-OUT
     if (!attendance.checkOutTime) {
       attendance.checkOutTime = new Date();
       await attendance.save();
@@ -96,24 +97,49 @@ const getTodayAttendance = async (req, res) => {
 };
 
 /**
- * ADMIN: Attendance summary
+ * ADMIN: Attendance summary (FIXED & COMPLETE)
  */
 const getAttendanceSummary = async (req, res) => {
   try {
     const organisationId = req.user.organisationId;
     const today = getToday();
 
+    // Total active employees (exclude admins)
+    const totalEmployees = await User.countDocuments({
+      organisationId,
+      isAdmin: false,
+      status: "Active"
+    });
+
+    // Present today
     const presentCount = await Attendance.countDocuments({
       organisationId,
       date: today,
       status: "Present"
     });
 
+    // On leave today
+    const leaveCount = await Attendance.countDocuments({
+      organisationId,
+      date: today,
+      status: "Leave"
+    });
+
+    // Absent = total - (present + leave)
+    const absentCount = Math.max(
+      totalEmployees - (presentCount + leaveCount),
+      0
+    );
+
     res.json({
       date: today,
-      present: presentCount
+      present: presentCount,
+      absent: absentCount,
+      onLeave: leaveCount
     });
+
   } catch (err) {
+    console.error("getAttendanceSummary:", err);
     res.status(500).json({
       message: "Failed to fetch attendance summary",
       error: err.message
