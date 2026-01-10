@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 
 const Navbar = ({ onToggleSidebar }) => {
   const history = useHistory();
-  const { token, setToken } = useContext(AuthContext);
+  const { token, logout } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const user = useMemo(() => {
@@ -17,7 +17,7 @@ const Navbar = ({ onToggleSidebar }) => {
   }, [token]);
 
   const handleLogout = () => {
-    setToken(null);
+    logout();
     history.push("/login");
   };
 

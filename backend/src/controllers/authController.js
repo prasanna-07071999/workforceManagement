@@ -87,7 +87,8 @@ const login = async (req, res) => {
             email: user.email,
             organisationId: organisation ? organisation._id.toString() : null,
             organisationName: organisation ? organisation.name : "",
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            mustChangePassword: user.mustChangePassword
         },
         JWT_SECRET,
         { expiresIn: "8h" }
@@ -111,6 +112,13 @@ const login = async (req, res) => {
         organisationId: user.organisationId
       });
     }
+
+    console.log("LOGIN SUCCESS:");
+    console.log({
+      email: user.email,
+      mustChangePassword: user.mustChangePassword,
+      isAdmin: user.isAdmin
+    });
 
     res.json({
       token,

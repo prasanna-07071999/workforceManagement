@@ -5,7 +5,7 @@ import { BASE_URL } from "../services/api"
 
 const Login = () => {
     const history = useHistory()
-    const { setToken } = useContext(AuthContext);
+    const { login } = useContext(AuthContext);
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
@@ -26,8 +26,15 @@ const Login = () => {
                 setErrorMsg(data.message || "Invalid credentials")
                 return
             }
-            setToken(data.token)
-            history.push("/dashboard"); 
+            console.log("LOGIN API RESPONSE:", data);
+            login(data.token);
+
+            if (data.mustChangePassword) {
+              history.push("/change-password");
+            } else {
+              history.push("/dashboard");
+            }
+ 
         }catch (error) {
         setErrorMsg("Something went wrong")
         }

@@ -129,7 +129,7 @@ const Dashboard = () => {
         const leaves = await leavesRes.json();
         const projects = await projectsRes.json();
 
-        const activeProject = projects.find(p => p.status === "Active");
+        const activeProject = Array.isArray(projects) ? projects.find(p => p.status === "Active"): null;
         const completedCount = projects.filter(p => p.status === "Completed").length;
 
         setEmployeeStats({

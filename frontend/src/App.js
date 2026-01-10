@@ -20,9 +20,7 @@ import Attendance from './pages/Attendance';
 import DailyUpdates from './pages/DailyUpdates';
 import Holidays from './pages/Holidays';
 import ChangePassword from './pages/ChangePassword';
-
-import Navbar from "./components/Navbar";
-import Sidebar from './components/Sidebar/sidebar';
+import Layout from './components/Layout/Layout';
 
 import './App.css';
 
@@ -38,18 +36,14 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
           return <Redirect to="/login" />;
         }
 
-        // 🚨 Force password change
         if (auth.mustChangePassword) {
           return <Redirect to="/change-password" />;
         }
 
         return (
-          <div className="d-flex">
-            <Sidebar />
-            <div className="flex-grow-1 p-4 bg-light min-vh-100">
-              <Component {...props} />
-            </div>
-          </div>
+          <Layout>
+            <Component {...props} />
+          </Layout>
         );
       }}
     />
@@ -74,7 +68,6 @@ const App = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
         <Switch>
 
           {/* Public */}
@@ -82,7 +75,7 @@ const App = () => {
           <AuthRoute exact path="/login" component={Login} />
           <AuthRoute exact path="/register" component={RegisterOrg} />
 
-          {/* Change Password (NO SIDEBAR) */}
+          {/* Change Password (NO SIDEBAR / NO NAVBAR) */}
           <Route
             exact
             path="/change-password"
@@ -109,7 +102,7 @@ const App = () => {
           <ProtectedRoute exact path="/holidays" component={Holidays} />
           <ProtectedRoute exact path="/logs" component={LogsPage} />
 
-          <Redirect to="/" />
+          <Redirect to="/login" />
         </Switch>
       </BrowserRouter>
     </AuthProvider>

@@ -20,7 +20,6 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const isAdmin = user.isAdmin;
   const mustChangePassword = user.mustChangePassword;
-
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -31,36 +30,36 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        <h6 className="text-uppercase mb-3" style={{ color: "#e5e7eb" }}>
+        <h6 className="text-uppercase mb-3 text-white">
           {isAdmin ? "Admin Panel" : "Employee Panel"}
         </h6>
 
         <ul className="nav nav-pills flex-column gap-2">
-          <SidebarItem path="/dashboard" icon="speedometer2" label="Dashboard" active={isActive} />
+          <SidebarItem path="/dashboard" icon="speedometer2" label="Dashboard" isActive={isActive} onClick={onClose} />
 
           {isAdmin && (
             <>
-              <SidebarItem path="/employees" icon="people-fill" label="Employees" active={isActive} />
-              <SidebarItem path="/teams" icon="grid-fill" label="Teams" active={isActive} />
-              <SidebarItem path="/projects" icon="briefcase-fill" label="Projects" active={isActive} />
-              <SidebarItem path="/recruitment" icon="person-lines-fill" label="Recruitment" active={isActive} />
-              <SidebarItem path="/attendance" icon="calendar-check-fill" label="Attendance" active={isActive} />
-              <SidebarItem path="/leaves" icon="calendar-event-fill" label="Leaves" active={isActive} />
-              <SidebarItem path="/holidays" icon="calendar-event-fill" label="Holidays" active={isActive} />
-              <SidebarItem path="/daily-updates" icon="clipboard-check-fill" label="Daily Updates" active={isActive} />
-              <SidebarItem path="/logs" icon="journal-text" label="Logs" active={isActive} />
+              <SidebarItem path="/employees" icon="people-fill" label="Employees" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/teams" icon="grid-fill" label="Teams" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/projects" icon="briefcase-fill" label="Projects" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/recruitment" icon="person-lines-fill" label="Recruitment" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/attendance" icon="calendar-check-fill" label="Attendance" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/leaves" icon="calendar-event-fill" label="Leaves" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/holidays" icon="calendar-event-fill" label="Holidays" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/daily-updates" icon="clipboard-check-fill" label="Daily Updates" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/logs" icon="journal-text" label="Logs" isActive={isActive} onClick={onClose} />
             </>
           )}
 
           {!isAdmin && (
             <>
-              <SidebarItem path="/attendance" icon="clock-fill" label="My Attendance" active={isActive} />
-              <SidebarItem path="/leaves" icon="calendar-check-fill" label="My Leaves" active={isActive} />
-              <SidebarItem path="/projects" icon="briefcase-fill" label="My Projects" active={isActive} />
-              <SidebarItem path="/daily-updates" icon="clipboard-check-fill" label="Daily Updates" active={isActive} />
+              <SidebarItem path="/attendance" icon="clock-fill" label="My Attendance" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/leaves" icon="calendar-check-fill" label="My Leaves" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/projects" icon="briefcase-fill" label="My Projects" isActive={isActive} onClick={onClose} />
+              <SidebarItem path="/daily-updates" icon="clipboard-check-fill" label="Daily Updates" isActive={isActive} onClick={onClose} />
 
               {mustChangePassword && (
-                <SidebarItem path="/change-password" icon="key-fill" label="Change Password" active={isActive} />
+                <SidebarItem path="/change-password" icon="key-fill" label="Change Password" isActive={isActive} onClick={onClose} />
               )}
             </>
           )}
@@ -70,13 +69,14 @@ const Sidebar = ({ isOpen, onClose }) => {
   );
 };
 
-const SidebarItem = ({ path, icon, label, active }) => (
+const SidebarItem = ({ path, icon, label, isActive, onClick }) => (
   <li className="nav-item">
     <Link
       to={path}
-      className={`nav-link ${active(path) ? "active" : "text-white"}`}
+      onClick={onClick}
+      className={`nav-link ${isActive(path) ? "active" : "text-white"}`}
     >
-      <i className={`bi bi-${icon} me-2`}></i>
+      <i className={`bi bi-${icon} me-2`} />
       {label}
     </Link>
   </li>

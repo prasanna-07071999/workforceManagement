@@ -47,7 +47,9 @@ const ChangePassword = () => {
       }
 
       localStorage.removeItem("jwt");
+      localStorage.removeItem("mustChangePassword");
       history.push("/login");
+
     } catch (err) {
       setErrorMsg("Something went wrong");
     } finally {

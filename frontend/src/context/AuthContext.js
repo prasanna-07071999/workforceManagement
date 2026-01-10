@@ -1,20 +1,22 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState} from "react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("jwt"));
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("jwt", token);
-    } else {
-      localStorage.removeItem("jwt");
-    }
-  }, [token]);
+  const login = (token) => {
+    localStorage.setItem("jwt", token);
+    setToken(token);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("jwt");
+    setToken(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ token, setToken }}>
+    <AuthContext.Provider value={{ token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

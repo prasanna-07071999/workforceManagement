@@ -1,5 +1,9 @@
-export const BASE_URL = process.env.REACT_APP_API_URL;
+export const BASE_URL = process.env.REACT_APP_API_URL
+if (!BASE_URL) {
+  console.error("REACT_APP_API_URL is not defined!");
+}
 console.log("BASE URL:", BASE_URL);
+
 export async function apiGet(path) {
   const token = localStorage.getItem("jwt");
 
@@ -12,7 +16,6 @@ export async function apiGet(path) {
 
   return response.json();
 }
-
 
 export async function apiPost(path, body) {
   const token = localStorage.getItem("jwt");
