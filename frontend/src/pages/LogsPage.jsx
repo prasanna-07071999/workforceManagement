@@ -46,36 +46,74 @@ const LogsPage = () => {
   }
 
 return (
-  <div className="container-fluid mt-4 px-2 px-md-4">
+  <div className="container-fluid mt-3 px-2 px-md-4">
     {/* Header */}
     <div className="d-flex justify-content-between align-items-center mb-3">
-      <h2 className="mb-0">System Logs</h2>
+      <h4 className="mb-0">System Logs</h4>
       <BackButton />
     </div>
 
     {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
 
-    {/* Logs Table */}
-    <div className="table-responsive">
-      <table className="table table-bordered table-sm text-center small align-middle">
+    {/* ================= MOBILE VIEW ================= */}
+    <div className="d-md-none">
+      {logs.length === 0 ? (
+        <div className="text-center text-muted">No logs found</div>
+      ) : (
+        logs.map((log) => (
+          <div key={log._id} className="card shadow-sm mb-2">
+            <div className="card-body p-2">
+              <div className="d-flex justify-content-between">
+                <small className="text-muted">
+                  {new Date(log.timestamp).toLocaleString()}
+                </small>
+                <span className="badge bg-primary">{log.event}</span>
+              </div>
+
+              <div className="mt-1 small fw-semibold">
+                {log.action}
+              </div>
+
+              <div className="mt-1 small text-muted">
+                User: {log.user?.name || "System"}
+              </div>
+
+              <div className="small text-muted">
+                Org: {log.organisation || "System"}
+              </div>
+
+              <div className="small">
+                Status: <strong>{log.status}</strong>
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+
+    {/* ================= TABLET + DESKTOP ================= */}
+    <div className="table-responsive d-none d-md-block">
+      <table className="table table-bordered table-sm align-middle">
         <thead className="table-light">
-          <tr>
-            <th style={{ width: "80px" }}>Log ID</th>
+          <tr className="small text-center">
+            <th>ID</th>
             <th>User</th>
-            <th className="d-none d-md-table-cell">Organisation</th>
+            <th className="d-none d-lg-table-cell">Organisation</th>
             <th>Action</th>
-            <th className="event-col">Event</th>
-            <th style={{ width: "70px" }}>Status</th>
+            <th>Event</th>
+            <th>Status</th>
             <th className="d-none d-lg-table-cell">IP</th>
-            <th style={{ width: "90px" }}>Date</th>
-            <th className="d-none d-md-table-cell">Time</th>
+            <th>Date</th>
+            <th className="d-none d-lg-table-cell">Time</th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="small">
           {logs.length === 0 ? (
             <tr>
-              <td colSpan="9">No logs found.</td>
+              <td colSpan="9" className="text-center">
+                No logs found
+              </td>
             </tr>
           ) : (
             logs.map((log) => (
@@ -83,24 +121,26 @@ return (
                 <td>{log._id.slice(-6)}</td>
 
                 <td className="text-break">
-                  {log.userId
-                    ? `${log.userId.name} (${log.userId.email})`
+                  {log.user
+                    ? `${log.user.name} (${log.user.email})`
                     : "System"}
                 </td>
 
-                <td className="d-none d-md-table-cell">
-                  {log.organisationId?.name || "N/A"}
+                <td className="d-none d-lg-table-cell">
+                  {log.organisation || "N/A"}
                 </td>
 
-                <td className="text-break">{log.action}</td>
+                <td className="text-break" style={{ fontSize: "11px" }}>
+                  {log.action}
+                </td>
 
                 <td>
-                  <span className="badge bg-primary event-badge">
+                  <span className="badge bg-primary small">
                     {log.event}
                   </span>
                 </td>
 
-                <td>{log.status}</td>
+                <td className="text-center">{log.status}</td>
 
                 <td className="d-none d-lg-table-cell text-break">
                   {log.ip || "N/A"}
@@ -110,7 +150,7 @@ return (
                   {new Date(log.timestamp).toLocaleDateString()}
                 </td>
 
-                <td className="d-none d-md-table-cell">
+                <td className="d-none d-lg-table-cell">
                   {new Date(log.timestamp).toLocaleTimeString()}
                 </td>
               </tr>

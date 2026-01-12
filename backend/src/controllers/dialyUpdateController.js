@@ -27,11 +27,9 @@ const submitDailyUpdate = async (req, res) => {
 
     await createLog({
       req,
-      action: "DAILY_UPDATE_SUBMITTED",
-      event: "DAILY_UPDATE",
-      status: 201,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      action: "POST /api/dialy-updates",
+      event: "DAILY_UPDATE SUBNITTED",
+      status: 201
     });
 
     res.status(201).json({

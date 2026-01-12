@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Team = require('../models/Team')
 const Employee = require('../models/Employee')
 const EmployeeTeam = require('../models/EmployeeTeam')
-const createLog = require('../models/Log')
+const createLog = require('../utils/createLog')
 
 const {Types} = mongoose
 
@@ -45,11 +45,9 @@ const createTeam =  async (req, res) => {
 
         await createLog({
         req,
-        action: "TEAM_CREATED",
+        action: "POST /api/teams",
         event: "TEAM_CREATED",
         status: 201,
-        userId: req.user.id,
-        organisationId: req.user.organisationId,
         teamId: team._id
         });
 
@@ -70,11 +68,9 @@ const updateTeam = async (req, res) => {
 
         await createLog({
         req,
-        action: "TEAM_UPDATED",
+        action: "PUT /api/teams/:id",
         event: "TEAM_UPDATED",
         status: 200,
-        userId: req.user.id,
-        organisationId: req.user.organisationId,
         teamId: team._id
         });
 
@@ -97,11 +93,9 @@ const deleteTeam = async (req, res) => {
 
         await createLog({
         req,
-        action: "TEAM_DELETED",
+        action: "DELETE /api/teams/:id",
         event: "TEAM_DELETED",
         status: 200,
-        userId: req.user.id,
-        organisationId: req.user.organisationId,
         teamId: team._id
         });
 
@@ -139,11 +133,9 @@ const assignEmployees = async (req, res) => {
 
         await createLog({
         req,
-        action: "TEAM_EMPLOYEES_ASSIGNED",
+        action: "POST /api/teams/:teamId/assign",
         event: "TEAM_EMPLOYEES_ASSIGNED",
         status: 200,
-        userId: req.user.id,
-        organisationId: req.user.organisationId,
         teamId: team._id
         });
 
@@ -167,11 +159,9 @@ const unassignEmployees =  async (req, res) => {
 
         await createLog({
         req,
-        action: "TEAM_EMPLOYEE_UNASSIGNED",
+        action: "POST /api/teams/:teamId/unassign",
         event: "TEAM_EMPLOYEE_UNASSIGNED",
         status: 200,
-        userId: req.user.id,
-        organisationId: req.user.organisationId,
         teamId: team._id
         });
 

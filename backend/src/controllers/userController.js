@@ -22,11 +22,9 @@ const updateUserStatus = async (req, res) => {
 
     await createLog({
       req,
-      action: `USER_STATUS_${status.toUpperCase()}`,
+      action: "PUT /api/users/:userId/status",
       event: "USER",
-      status: 200,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      status: 200
     });
 
     res.json({

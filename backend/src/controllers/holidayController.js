@@ -22,11 +22,9 @@ const createHoliday = async (req, res) => {
 
     await createLog({
       req,
-      action: "HOLIDAY_CREATED",
-      event: "HOLIDAY",
-      status: 201,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      action: "POST /api/holidays",
+      event: "HOLIDAY_CREATED",
+      status: 201
     });
 
     res.status(201).json({
@@ -83,11 +81,9 @@ const deleteHoliday = async (req, res) => {
 
     await createLog({
       req,
-      action: "HOLIDAY_DELETED",
-      event: "HOLIDAY",
-      status: 200,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      action: "DELETE /api/holidays/:id",
+      event: "HOLIDAY DELETED",
+      status: 200
     });
 
     res.json({ message: "Holiday deleted successfully" });

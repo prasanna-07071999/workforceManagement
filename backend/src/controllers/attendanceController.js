@@ -28,11 +28,9 @@ const markAttendance = async (req, res) => {
 
       await createLog({
         req,
-        action: "ATTENDANCE_CHECKIN",
-        event: "ATTENDANCE",
-        status: 201,
-        userId,
-        organisationId
+        action: "POST /api/attendance/check-in",
+        event: "ATTENDANCE CHECKIN",
+        status: 201
       });
 
       return res.status(201).json({
@@ -48,11 +46,9 @@ const markAttendance = async (req, res) => {
 
       await createLog({
         req,
-        action: "ATTENDANCE_CHECKOUT",
-        event: "ATTENDANCE",
-        status: 200,
-        userId,
-        organisationId
+        action: "POST /api/attendance/check-out",
+        event: "ATTENDANCE_CHECKOUT",
+        status: 200
       });
 
       return res.json({

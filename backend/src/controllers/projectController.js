@@ -21,11 +21,9 @@ const createProject = async (req, res) => {
 
   await createLog({
     req,
-    action: "PROJECT_CREATED",
-    event: "PROJECT",
-    status: 201,
-    userId: req.user.userId,
-    organisationId: req.user.organisationId
+    action: "POST /api/projects",
+    event: "PROJECT_CREATED",
+    status: 201
   });
 
   res.status(201).json(project);
@@ -47,6 +45,12 @@ const updateProjectStatus = async (req, res) => {
     { status },
     { new: true }
   );
+  await createLog({
+    req,
+    action: "PUT /api/projects/:id",
+    event: "PROJECT STATUS UPDATED",
+    status: 201
+  });
 
   res.json(project);
 };
@@ -66,6 +70,7 @@ const assignEmployees = async (req, res) => {
 
   res.json({ message: "Employees assigned to project" });
 };
+
 
 /**
  * ADMIN: View all projects (groupable by status)

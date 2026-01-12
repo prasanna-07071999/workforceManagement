@@ -24,11 +24,9 @@ const applyLeave = async (req, res) => {
 
     await createLog({
       req,
-      action: "LEAVE_APPLIED",
-      event: "LEAVE",
-      status: 201,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      action: "POST /api/leaves",
+      event: "LEAVE_APPLIED",
+      status: 201
     });
 
     res.status(201).json({
@@ -110,11 +108,9 @@ const updateLeaveStatus = async (req, res) => {
 
     await createLog({
       req,
-      action: `LEAVE_${status.toUpperCase()}`,
-      event: "LEAVE",
-      status: 200,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      action: 'PUT /api/leaves/:id/status',
+      event: "LEAVE_UPDATED",
+      status: 200
     });
 
     res.json({

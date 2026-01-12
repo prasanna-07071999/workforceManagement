@@ -80,11 +80,9 @@ const createEmployee = async (req, res) => {
 
     await createLog({
       req,
-      action: "EMPLOYEE_CREATED",
+      action: "POST /api/employees",
       event: "EMPLOYEE_CREATED",
-      status: 201,
-      userId: req.user.userId,
-      organisationId: req.user.organisationId
+      status: 201
     });
 
     res.status(201).json({
@@ -108,11 +106,9 @@ const updateEmployee = async (req, res) => {
 
     await createLog({
       req,
-      action: "EMPLOYEE_UPDATED",
+      action: "PUT /api/employees/:id",
       event: "EMPLOYEE_UPDATED",
       status: 200,
-      userId: req.user.id,
-      organisationId: req.user.organisationId,
       employeeId: employee._id
     });
 
@@ -134,11 +130,9 @@ const deleteEmployee = async (req, res) => {
 
     await createLog({
       req,
-      action: "EMPLOYEE_DELETED",
+      action: "DELETE /api/employees/:id",
       event: "EMPLOYEE_DELETED",
       status: 200,
-      userId: req.user.id,
-      organisationId: req.user.organisationId,
       employeeId: employee._id
     });
 
