@@ -1,5 +1,16 @@
 const Log = require("../models/Log");
 
+const getClientIp = (req) => {
+  if (!req) return null;
+
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) {
+    return forwarded.split(",")[0].trim(); // ✅ FIRST IP ONLY
+  }
+
+  return req.ip || null;
+};
+
 const createLog = async ({
   req,
   action,
@@ -18,7 +29,7 @@ const createLog = async ({
       action,
       event,
       status,
-      ip:req.headers["x-forwarded-for"] || req.ip,
+      ip:getClientIp(req),
       timestamp: new Date()
     });
   } catch (err) {

@@ -75,7 +75,7 @@ return (
               </div>
 
               <div className="mt-1 small text-muted">
-                User: {log.user?.name || "System"}
+                User: {log.user? log.user.name: "System"}
               </div>
 
               <div className="small text-muted">
@@ -93,15 +93,15 @@ return (
 
     {/* ================= TABLET + DESKTOP ================= */}
     <div className="table-responsive d-none d-md-block">
-      <table className="table table-bordered table-sm align-middle">
+      <table className="table table-bordered table-sm align-middle" style={{ tableLayout: "fixed" }}>
         <thead className="table-light">
           <tr className="small text-center">
-            <th>ID</th>
+            <th style={{ width: "60px" }}>ID</th>
             <th>User</th>
             <th className="d-none d-lg-table-cell">Organisation</th>
             <th>Action</th>
-            <th>Event</th>
-            <th>Status</th>
+            <th style={{ minWidth: "200px" }}>Event</th>
+            <th style={{ width: "60px" }}>Status</th>
             <th className="d-none d-lg-table-cell">IP</th>
             <th>Date</th>
             <th className="d-none d-lg-table-cell">Time</th>
@@ -118,12 +118,10 @@ return (
           ) : (
             logs.map((log) => (
               <tr key={log._id}>
-                <td>{log._id.slice(-6)}</td>
+                <td style={{ fontSize: "12px" }}>{log._id.slice(-6)}</td>
 
-                <td className="text-break">
-                  {log.user
-                    ? `${log.user.name} (${log.user.email})`
-                    : "System"}
+                <td className="text-break" title={log?.user?.email || ""}>
+                  {log.user? log.user.name : "System"}
                 </td>
 
                 <td className="d-none d-lg-table-cell">
@@ -134,13 +132,17 @@ return (
                   {log.action}
                 </td>
 
-                <td>
-                  <span className="badge bg-primary small">
+                <td style={{ minWidth: "200px" }}>
+                  <span
+                    className="badge bg-primary"
+                    style={{ fontSize: "11px", whiteSpace: "normal" }}
+                  >
                     {log.event}
                   </span>
                 </td>
 
-                <td className="text-center">{log.status}</td>
+                <td style={{ width: "60px", fontWeight: "600" }}>{log.status}</td>
+
 
                 <td className="d-none d-lg-table-cell text-break">
                   {log.ip || "N/A"}
