@@ -23,15 +23,18 @@ const DailyUpdateSchema = new Schema(
     description: {
       type: String,
       required: true
-    }
+    },
+
+    // 🔥 future-ready fields
+    blockers: [String],
+    tasks: [String]
   },
   { timestamps: true }
 );
 
-// 🔐 One update per user per day
 DailyUpdateSchema.index(
   { userId: 1, date: 1 },
   { unique: true }
 );
 
-module.exports = model("DailyUpdate", DailyUpdateSchema)
+module.exports = model("DailyUpdate", DailyUpdateSchema);

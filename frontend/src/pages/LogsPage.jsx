@@ -25,7 +25,6 @@ const LogsPage = () => {
         }
         const data = await response.json();
         const logData = Array.isArray(data) ? data : data.logs || [];
-        console.log(logData)
         setLogs(logData);
       } catch (error) {
         setErrorMsg("Something went wrong loading logs.");

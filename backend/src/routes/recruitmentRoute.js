@@ -9,15 +9,18 @@ const {
   getJobs,
   addCandidate,
   updateCandidateStatus,
-  getHiredCandidates
+  getHiredCandidates,
+  updateJobStatus
 } = require("../controllers/recruitmentController");
 
+// JOBS
 router.post("/jobs", authMiddleware, adminOnly, createJob);
 router.get("/jobs", authMiddleware, adminOnly, getJobs);
+router.patch("/jobs/:jobId/status", authMiddleware, adminOnly, updateJobStatus);
 
+// CANDIDATES
 router.post("/candidates", authMiddleware, adminOnly, addCandidate);
 router.patch("/candidates/:candidateId/status", authMiddleware, adminOnly, updateCandidateStatus);
-
 router.get("/candidates/hired", authMiddleware, adminOnly, getHiredCandidates);
 
-module.exports = router;
+module.exports = router

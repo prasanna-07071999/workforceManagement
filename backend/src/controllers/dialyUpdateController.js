@@ -1,19 +1,18 @@
 const DailyUpdate = require("../models/DialyUpdate");
+const User = require("../models/User");
 const createLog = require("../utils/createLog");
 
-// Helper
 const getToday = () => new Date().toISOString().split("T")[0];
 
 /**
- * EMPLOYEE: Submit daily update
+ * EMPLOYEE: Submit
  */
 const submitDailyUpdate = async (req, res) => {
   try {
     const { description } = req.body;
+
     if (!description) {
-      return res.status(400).json({
-        message: "description is required"
-      });
+      return res.status(400).json({ message: "description required" });
     }
 
     const today = getToday();
@@ -28,33 +27,25 @@ const submitDailyUpdate = async (req, res) => {
     await createLog({
       req,
       action: "POST /api/dialy-updates",
-      event: "DAILY_UPDATE SUBNITTED",
+      event: "DAILY_UPDATE_SUBMITTED",
       status: 201
     });
 
-    res.status(201).json({
-      message: "Daily update submitted",
-      update
-    });
-  } catch (err) {
-    console.error("submitDailyUpdate:", err);
+    res.status(201).json({ message: "Submitted", update });
 
-    // Duplicate update protection
+  } catch (err) {
     if (err.code === 11000) {
       return res.status(409).json({
-        message: "Daily update already submitted for today"
+        message: "Already submitted today"
       });
     }
 
-    res.status(500).json({
-      message: "Failed to submit daily update",
-      error: err.message
-    });
+    res.status(500).json({ message: err.message });
   }
 };
 
 /**
- * EMPLOYEE: View own daily updates
+ * EMPLOYEE: My updates
  */
 const getMyDailyUpdates = async (req, res) => {
   try {
@@ -64,30 +55,60 @@ const getMyDailyUpdates = async (req, res) => {
 
     res.json(updates);
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to fetch daily updates",
-      error: err.message
-    });
+    res.status(500).json({ message: err.message });
   }
 };
 
 /**
- * ADMIN: View all daily updates
+ * ADMIN: All updates + summary + missing
  */
 const getAllDailyUpdates = async (req, res) => {
   try {
+    const organisationId = req.user.organisationId;
+    const today = getToday();
+
+    // all updates
     const updates = await DailyUpdate.find({
-      organisationId: req.user.organisationId
+      organisationId
     })
       .populate("userId", "name email")
       .sort({ date: -1 });
 
-    res.json(updates);
-  } catch (err) {
-    res.status(500).json({
-      message: "Failed to fetch all daily updates",
-      error: err.message
+    // today updates
+    const todayUpdates = await DailyUpdate.find({
+      organisationId,
+      date: today
     });
+
+    const submittedUserIds = todayUpdates.map(u => u.userId.toString());
+
+    // all employees
+    const employees = await User.find({
+      organisationId,
+      isAdmin: false,
+      status: "Active"
+    });
+
+    // missing updates
+    const missing = employees.filter(
+      e => !submittedUserIds.includes(e._id.toString())
+    );
+
+    res.json({
+      updates,
+      summary: {
+        totalEmployees: employees.length,
+        submitted: todayUpdates.length,
+        missing: missing.length
+      },
+      missingEmployees: missing.map(e => ({
+        name: e.name,
+        email: e.email
+      }))
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

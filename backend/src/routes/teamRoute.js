@@ -9,10 +9,12 @@ const {
     updateTeam,
     deleteTeam,
     assignEmployees,
-    unassignEmployees
+    unassignEmployees,
+    getMyTeams
 } = require('../controllers/teamController')
 
 router.get('/', getallTeams)
+router.get("/my", getMyTeams);
 router.get('/:id', getTeamById)
 router.post('/', createTeam)
 router.put('/:id', updateTeam),

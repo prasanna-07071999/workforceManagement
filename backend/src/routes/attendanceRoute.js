@@ -7,7 +7,9 @@ const adminOnly = require("../middleware/adminOnly");
 const {
   markAttendance,
   getTodayAttendance,
-  getAttendanceSummary
+  getAttendanceSummary,
+  getMyTodayAttendance,
+  getMyMonthlyAttendance
 } = require("../controllers/attendanceController");
 
 // Employee marks attendance
@@ -18,5 +20,13 @@ router.get("/today", authMiddleware, adminOnly, getTodayAttendance);
 
 // Admin summary
 router.get("/summary", authMiddleware, adminOnly, getAttendanceSummary);
+
+// Employee: get my today's attendance
+router.get("/my/today", authMiddleware, getMyTodayAttendance);
+
+// Employee: monthly attendance
+router.get("/my/monthly", authMiddleware, getMyMonthlyAttendance);
+
+
 
 module.exports = router

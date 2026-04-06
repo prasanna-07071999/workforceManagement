@@ -1,16 +1,28 @@
 const Leave = require("../models/Leave");
 const createLog = require("../utils/createLog");
 
-/**
- * EMPLOYEE: Apply leave
- */
+const Attendance = require("../models/Attendance");
+
 const applyLeave = async (req, res) => {
   try {
-    const { fromDate, toDate, reason } = req.body;
+    const { fromDate, toDate, reason, leaveType } = req.body;
 
     if (!fromDate || !toDate || !reason) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
+    // ❌ Prevent overlapping leaves
+    const overlap = await Leave.findOne({
+      userId: req.user.userId,
+      status: { $ne: "Rejected" },
+      $or: [
+        { fromDate: { $lte: toDate }, toDate: { $gte: fromDate } }
+      ]
+    });
+
+    if (overlap) {
       return res.status(400).json({
-        message: "fromDate, toDate and reason are required"
+        message: "Overlapping leave already exists"
       });
     }
 
@@ -19,7 +31,8 @@ const applyLeave = async (req, res) => {
       userId: req.user.userId,
       fromDate,
       toDate,
-      reason
+      reason,
+      leaveType
     });
 
     await createLog({
@@ -29,18 +42,12 @@ const applyLeave = async (req, res) => {
       status: 201
     });
 
-    res.status(201).json({
-      message: "Leave applied successfully",
-      leave
-    });
+    res.status(201).json({ message: "Leave applied", leave });
   } catch (err) {
-    console.error("applyLeave:", err);
-    res.status(500).json({
-      message: "Failed to apply leave",
-      error: err.message
-    });
+    res.status(500).json({ message: "Failed to apply leave" });
   }
 };
+
 
 /**
  * EMPLOYEE: View own leaves
@@ -81,54 +88,99 @@ const getAllLeaves = async (req, res) => {
   }
 };
 
-/**
- * ADMIN: Approve / Reject leave
- */
+//Approve or reject leave (Admin)
+
 const updateLeaveStatus = async (req, res) => {
   try {
     const { leaveId } = req.params;
     const { status } = req.body;
 
-    if (!["Approved", "Rejected"].includes(status)) {
-      return res.status(400).json({
-        message: "Status must be Approved or Rejected"
+    const leave = await Leave.findById(leaveId);
+    if (!leave) return res.status(404).json({ message: "Leave not found" });
+
+    // 🚫 Admin cannot approve own leave
+    if (leave.userId.toString() === req.user.userId) {
+      return res.status(403).json({
+        message: "You cannot approve or reject your own leave"
       });
     }
 
-    const leave = await Leave.findById(leaveId);
-    if (!leave) {
-      return res.status(404).json({ message: "Leave not found" });
+    if (!["Approved", "Rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
     }
 
     leave.status = status;
     leave.approvedBy = req.user.userId;
     leave.approvedAt = new Date();
-
     await leave.save();
+
+    // ✅ If approved → mark attendance
+    if (status === "Approved") {
+      const dates = getDatesBetween(leave.fromDate, leave.toDate);
+
+      for (const date of dates) {
+        await Attendance.findOneAndUpdate(
+          { userId: leave.userId, date },
+          {
+            organisationId: leave.organisationId,
+            userId: leave.userId,
+            date,
+            status: "Leave"
+          },
+          { upsert: true }
+        );
+      }
+    }
 
     await createLog({
       req,
-      action: 'PUT /api/leaves/:id/status',
+      action: "PATCH /api/leaves/:id/status",
       event: "LEAVE_UPDATED",
       status: 200
     });
 
-    res.json({
-      message: `Leave ${status.toLowerCase()} successfully`,
-      leave
-    });
+    res.json({ message: `Leave ${status.toLowerCase()}`, leave });
   } catch (err) {
-    console.error("updateLeaveStatus:", err);
-    res.status(500).json({
-      message: "Failed to update leave status",
-      error: err.message
-    });
+    res.status(500).json({ message: "Failed to update leave" });
   }
 };
+
+// const rejectLeave = async (req, res) => {
+//   const { comment } = req.body;
+//   const leave = await Leave.findById(req.params.id);
+
+//   if (!leave) return res.status(404).json({ message: "Leave not found" });
+
+//   if (leave.userId.toString() === req.user.userId) {
+//     return res.status(403).json({ message: "Cannot reject your own leave" });
+//   }
+
+//   leave.status = "Rejected";
+//   leave.adminComment = comment;
+//   leave.approvedBy = req.user.userId;
+
+//   await leave.save();
+
+//   res.json({ message: "Leave rejected" });
+// };
+
+/* ================= HELPER ================= */
+function getDatesBetween(start, end) {
+  const dates = [];
+  let current = new Date(start);
+  const last = new Date(end);
+
+  while (current <= last) {
+    dates.push(current.toISOString().slice(0, 10));
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
+}
 
 module.exports = {
   applyLeave,
   getMyLeaves,
   getAllLeaves,
-  updateLeaveStatus
+  updateLeaveStatus,
 }

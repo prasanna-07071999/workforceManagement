@@ -16,7 +16,7 @@ const createHoliday = async (req, res) => {
 
     const holiday = await Holiday.create({
       organisationId: req.user.organisationId,
-      date,
+      date: new Date(date),
       name
     });
 

@@ -26,7 +26,6 @@ const Login = () => {
                 setErrorMsg(data.message || "Invalid credentials")
                 return
             }
-            console.log("LOGIN API RESPONSE:", data);
             login(data.token);
 
             if (data.mustChangePassword) {

@@ -120,7 +120,7 @@ const Dashboard = () => {
           leavesRes,
           projectsRes,
         ] = await Promise.all([
-          fetch(`${BASE_URL}/api/attendance/today`, { headers }),
+          fetch(`${BASE_URL}/api/attendance/my/today`, { headers }),
           fetch(`${BASE_URL}/api/leaves/my`, { headers }),
           fetch(`${BASE_URL}/api/projects/my`, { headers }),
         ]);
@@ -133,7 +133,7 @@ const Dashboard = () => {
         const completedCount = projects.filter(p => p.status === "Completed").length;
 
         setEmployeeStats({
-          attendanceStatus: attendance?.status || "Not Marked",
+          attendanceStatus: attendance ? attendance.status : "Not Marked",
           myLeaves: leaves.length,
           myProjects: projects.length,
           currentProject: activeProject?.name || "--",

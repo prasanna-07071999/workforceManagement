@@ -1,9 +1,27 @@
 const Attendance = require("../models/Attendance");
 const User = require("../models/User");
+const Holiday = require("../models/Holiday"); // ✅ NEW
 const createLog = require("../utils/createLog");
 
-// Helper: get today date (YYYY-MM-DD)
 const getToday = () => new Date().toISOString().split("T")[0];
+
+// ✅ HELPER: check holiday
+const checkIfHoliday = async (organisationId) => {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  return await Holiday.findOne({
+    organisationId,
+    $or: [
+      { date: today },
+      {
+        isRecurring: true,
+        month: today.getMonth(),
+        day: today.getDate()
+      }
+    ]
+  });
+};
 
 /**
  * EMPLOYEE: Check-in / Check-out
@@ -14,9 +32,16 @@ const markAttendance = async (req, res) => {
     const organisationId = req.user.organisationId;
     const today = getToday();
 
+    // ✅ HOLIDAY CHECK
+    const holiday = await checkIfHoliday(organisationId);
+    if (holiday) {
+      return res.status(400).json({
+        message: `Today is ${holiday.name}. Holiday!`
+      });
+    }
+
     let attendance = await Attendance.findOne({ userId, date: today });
 
-    // FIRST CHECK-IN
     if (!attendance) {
       attendance = await Attendance.create({
         organisationId,
@@ -39,7 +64,6 @@ const markAttendance = async (req, res) => {
       });
     }
 
-    // CHECK-OUT
     if (!attendance.checkOutTime) {
       attendance.checkOutTime = new Date();
       await attendance.save();
@@ -62,7 +86,6 @@ const markAttendance = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("markAttendance:", err);
     res.status(500).json({
       message: "Failed to mark attendance",
       error: err.message
@@ -78,6 +101,16 @@ const getTodayAttendance = async (req, res) => {
     const today = getToday();
     const organisationId = req.user.organisationId;
 
+    const holiday = await checkIfHoliday(organisationId);
+
+    if (holiday) {
+      return res.json({
+        isHoliday: true,
+        holidayName: holiday.name,
+        list: []
+      });
+    }
+
     const attendance = await Attendance.find({
       organisationId,
       date: today
@@ -85,43 +118,48 @@ const getTodayAttendance = async (req, res) => {
 
     res.json(attendance);
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to fetch today attendance",
-      error: err.message
-    });
+    res.status(500).json({ message: err.message });
   }
 };
 
 /**
- * ADMIN: Attendance summary (FIXED & COMPLETE)
+ * ADMIN: Summary
  */
 const getAttendanceSummary = async (req, res) => {
   try {
     const organisationId = req.user.organisationId;
     const today = getToday();
 
-    // Total active employees (exclude admins)
+    const holiday = await checkIfHoliday(organisationId);
+
     const totalEmployees = await User.countDocuments({
       organisationId,
       isAdmin: false,
       status: "Active"
     });
 
-    // Present today
+    if (holiday) {
+      return res.json({
+        date: today,
+        present: 0,
+        absent: 0,
+        onLeave: 0,
+        holiday: totalEmployees // ✅ everyone holiday
+      });
+    }
+
     const presentCount = await Attendance.countDocuments({
       organisationId,
       date: today,
       status: "Present"
     });
 
-    // On leave today
     const leaveCount = await Attendance.countDocuments({
       organisationId,
       date: today,
       status: "Leave"
     });
 
-    // Absent = total - (present + leave)
     const absentCount = Math.max(
       totalEmployees - (presentCount + leaveCount),
       0
@@ -135,16 +173,64 @@ const getAttendanceSummary = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("getAttendanceSummary:", err);
-    res.status(500).json({
-      message: "Failed to fetch attendance summary",
-      error: err.message
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * EMPLOYEE: Today
+ */
+const getMyTodayAttendance = async (req, res) => {
+  try {
+    const organisationId = req.user.organisationId;
+    const userId = req.user.userId;
+    const today = getToday();
+
+    const holiday = await checkIfHoliday(organisationId);
+
+    if (holiday) {
+      return res.json({
+        isHoliday: true,
+        holidayName: holiday.name
+      });
+    }
+
+    const attendance = await Attendance.findOne({
+      userId,
+      date: today
     });
+
+    res.json(attendance || null);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * EMPLOYEE: Monthly
+ */
+const getMyMonthlyAttendance = async (req, res) => {
+  try {
+    const { month } = req.query;
+    const organisationId = req.user.organisationId;
+    const userId = req.user.userId;
+
+    const records = await Attendance.find({
+      organisationId,
+      userId,
+      date: { $regex: `^${month}` }
+    }).sort({ date: 1 });
+
+    res.json(records);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
 module.exports = {
   markAttendance,
   getTodayAttendance,
-  getAttendanceSummary
+  getAttendanceSummary,
+  getMyTodayAttendance,
+  getMyMonthlyAttendance
 };

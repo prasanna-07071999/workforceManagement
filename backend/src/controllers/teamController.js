@@ -84,27 +84,39 @@ const updateTeam = async (req, res) => {
 const deleteTeam = async (req, res) => {
     try {
         const team = await Team.findById(req.params.id);
-        if (!team || !checkOrgOwnershipTeam(req, team)) return res.status(404).json({ message: "Team Not Found" });
+        if (!team || !checkOrgOwnershipTeam(req, team)) {
+            return res.status(404).json({ message: "Team Not Found" });
+        }
 
-        // remove employee-team mappings for this team
-        await EmployeeTeam.deleteMany({ teamId: team._id });
+        const assignedCount = await EmployeeTeam.countDocuments({
+            teamId: team._id
+        });
+
+        if (assignedCount > 0) {
+            return res.status(400).json({
+                message: "Cannot delete team. Employees are still assigned to this team."
+            });
+        }
 
         await Team.deleteOne({ _id: team._id });
 
         await createLog({
-        req,
-        action: "DELETE /api/teams/:id",
-        event: "TEAM_DELETED",
-        status: 200,
-        teamId: team._id
+            req,
+            action: "DELETE /api/teams/:id",
+            event: "TEAM_DELETED",
+            status: 200,
+            teamId: team._id
         });
 
         res.json({ message: "Team deleted successfully" });
     } catch (err) {
         console.error("deleteTeam:", err);
-        res.status(500).json({ message: "Failed to delete team", error: err.message });
+        res.status(500).json({
+            message: "Failed to delete team",
+            error: err.message
+        });
     }
-}
+};
 
 // Assign employees to a team (single or multiple)
 const assignEmployees = async (req, res) => {
@@ -172,6 +184,47 @@ const unassignEmployees =  async (req, res) => {
     }
 }
 
+
+const getMyTeams = async (req, res) => {
+  try {
+    // 1️⃣ Find employee record from logged-in user
+    const employee = await Employee.findOne({
+      userId: req.user.userId,
+      organisationId: req.user.organisationId
+    });
+    console.log(employee)
+    if (!employee) {
+      return res.json([]);
+    }
+
+    // 2️⃣ Find team mappings
+    const mappings = await EmployeeTeam.find({
+      employeeId: employee._id
+    });
+    console.log(mappings)
+    const teamIds = mappings.map(m => m.teamId);
+
+    if (teamIds.length === 0) {
+      return res.json([]);
+    }
+
+    // 3️⃣ Fetch teams
+    const teams = await Team.find({
+      _id: { $in: teamIds },
+      organisationId: req.user.organisationId
+    });
+    console.log(teams)
+    res.json(teams);
+  } catch (err) {
+    console.error("getMyTeams:", err);
+    res.status(500).json({
+      message: "Failed to fetch employee teams",
+      error: err.message
+    });
+  }
+};
+
+
 module.exports = {
     getallTeams,
     getTeamById,
@@ -179,5 +232,6 @@ module.exports = {
     updateTeam,
     deleteTeam,
     assignEmployees,
-    unassignEmployees
+    unassignEmployees,
+    getMyTeams
 }

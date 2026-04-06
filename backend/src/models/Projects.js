@@ -25,11 +25,17 @@ const ProjectSchema = new Schema(
     },
 
     startDate: {
-      type: String // YYYY-MM-DD
+      type: String
     },
 
     endDate: {
-      type: String // YYYY-MM-DD
+      type: String
+    },
+    
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      required: true
     }
   },
   { timestamps: true }

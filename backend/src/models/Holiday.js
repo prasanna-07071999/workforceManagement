@@ -9,9 +9,17 @@ const HolidaySchema = new Schema(
       required: true
     },
 
+    // One-time holiday
     date: {
-      type: String, // YYYY-MM-DD
-      required: true
+      type: Date
+    },
+
+    // Recurring holiday
+    month: Number,
+    day: Number,
+    isRecurring: {
+      type: Boolean,
+      default: false
     },
 
     name: {
@@ -22,7 +30,7 @@ const HolidaySchema = new Schema(
   { timestamps: true }
 );
 
-// 🔐 One holiday per org per date
+// unique per org per day
 HolidaySchema.index(
   { organisationId: 1, date: 1 },
   { unique: true }

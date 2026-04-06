@@ -14,8 +14,22 @@ const JobSchema = new Schema(
       required: true
     },
 
-    description: {
-      type: String
+    requiredSkills: {
+      type: [String],
+      default: []
+    },
+
+    qualifications: {
+      type: String,
+      default: ""
+    },
+
+    startDate: {
+      type: Date
+    },
+
+    deadline: {
+      type: Date
     },
 
     status: {
@@ -27,4 +41,4 @@ const JobSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model("Job", JobSchema);
+module.exports = model("Job", JobSchema)

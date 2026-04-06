@@ -46,7 +46,7 @@ const register = async (req, res) => {
 
     await createLog({
       req,
-      action: "USER_REGISTER",
+      action: "POST /api/auth/register",
       event: "USER_REGISTER",
       status: 201,
       organisationId: org._id,
@@ -65,7 +65,6 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: "email and password required" });
-    console.log("Login attempt:", email);
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User Not Found" });
 
@@ -96,7 +95,7 @@ const login = async (req, res) => {
      if (user.mustChangePassword) {
       await createLog({
         req,
-        action: "EMPLOYEE_FIRST_LOGIN",
+        action: "POST /api/auth/login",
         event: "EMPLOYEE_FIRST_LOGIN",
         status: 200,
         userId: user._id,
@@ -105,7 +104,7 @@ const login = async (req, res) => {
     } else {
       await createLog({
         req,
-        action: "USER_LOGIN",
+        action: "POST /api/auth/login",
         event: "USER_LOGIN",
         status: 200,
         userId: user._id,
@@ -145,7 +144,7 @@ const changePassword = async (req, res) => {
 
     await createLog({
       req,
-      action: "PASSWORD_CHANGED",
+      action: "PUT /api/auth/change-password",
       event: "PASSWORD_CHANGED",
       status: 200,
       userId: user._id,

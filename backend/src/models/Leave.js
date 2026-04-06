@@ -15,6 +15,12 @@ const LeaveSchema = new Schema(
       required: true
     },
 
+    leaveType: {
+      type: String,
+      enum: ["Casual", "Sick", "Earned"],
+      default: "Casual"
+    },
+
     fromDate: {
       type: String, // YYYY-MM-DD
       required: true

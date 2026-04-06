@@ -34,4 +34,4 @@ const CandidateSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model("Candidate", CandidateSchema);
+module.exports = model("Candidate", CandidateSchema)

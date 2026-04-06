@@ -6,19 +6,19 @@ const adminOnly = require("../middleware/adminOnly");
 
 const {
   createProject,
-  updateProjectStatus,
-  assignEmployees,
+  updateProject,
+  deleteProject,
+  getProjectDetails,
   getAllProjects,
   getEmployeeProjects
 } = require("../controllers/projectController");
 
 // Admin
 router.post("/", authMiddleware, adminOnly, createProject);
-router.patch("/:projectId/status", authMiddleware, adminOnly, updateProjectStatus);
-router.post("/:projectId/assign", authMiddleware, adminOnly, assignEmployees);
+router.put("/:id", authMiddleware, adminOnly, updateProject);
+router.delete("/:id", authMiddleware, adminOnly, deleteProject);
 router.get("/", authMiddleware, adminOnly, getAllProjects);
-
-// Employee
+router.get("/:id/details", authMiddleware, adminOnly, getProjectDetails);
 router.get("/my", authMiddleware, getEmployeeProjects);
 
 module.exports = router;

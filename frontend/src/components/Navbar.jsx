@@ -56,7 +56,7 @@ const Navbar = ({ onToggleSidebar }) => {
         {/* RIGHT: DESKTOP USER INFO (STRAIGHT LINE) */}
         <div className="d-none d-md-flex align-items-center gap-3">
           {/* Name + Email */}
-          <div className="d-flex flex-column text-end lh-sm">
+          <div className="d-flex flex-column text-end">
             <span className="fw-bold">{user.name}</span>
             <small className="text-muted">{user.email}</small>
           </div>

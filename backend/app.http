@@ -1,6 +1,6 @@
 @BASE_URL = http://localhost:5000
-@ADMIN_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTYyNWIyN2JiOTQ0ZjM1NDU2MDVlZGIiLCJuYW1lIjoiQWRtaW4gUHJhc2FubmEiLCJlbWFpbCI6ImFkbWluQGJhc2FudC5jb20iLCJvcmdhbmlzYXRpb25JZCI6IjY5NjI1YjI3YmI5NDRmMzU0NTYwNWVkNCIsIm9yZ2FuaXNhdGlvbk5hbWUiOiJCYXNhbnQgVGVjaG5vbG9naWVzIiwiaXNBZG1pbiI6dHJ1ZSwibXVzdENoYW5nZVBhc3N3b3JkIjpmYWxzZSwiaWF0IjoxNzY4MjAxMzE0LCJleHAiOjE3NjgyMzAxMTR9.DdhPffB2VsJW3q6RwlD27y4Qy4lWR9QUsx4M-caw2Ok
-@EMPLOYEE_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTYwNjc2NzQ3ZjRhM2MxYTI1NzRkOGQiLCJuYW1lIjoiUmFtYUtyaXNobmEgUmVkZHkiLCJlbWFpbCI6InJhbWFrcmlzaG5hQGJhc2FudC5jb20iLCJvcmdhbmlzYXRpb25JZCI6IjY5NGU3MzQ4ZmMzNzUxODM0ZDNiNGQ5OSIsIm9yZ2FuaXNhdGlvbk5hbWUiOiJCYXNhbnQgVGVjaG5vbG9naWVzIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTc2NzkyNTY2NiwiZXhwIjoxNzY3OTU0NDY2fQ.rJ7XpGsplNbYoT5HkU17wSSD6irCCte971NUULK0uqA
+@ADMIN_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTYyNWIyN2JiOTQ0ZjM1NDU2MDVlZGIiLCJuYW1lIjoiQWRtaW4gUHJhc2FubmEiLCJlbWFpbCI6ImFkbWluQGJhc2FudC5jb20iLCJvcmdhbmlzYXRpb25JZCI6IjY5NjI1YjI3YmI5NDRmMzU0NTYwNWVkNCIsIm9yZ2FuaXNhdGlvbk5hbWUiOiJCYXNhbnQgVGVjaG5vbG9naWVzIiwiaXNBZG1pbiI6dHJ1ZSwibXVzdENoYW5nZVBhc3N3b3JkIjpmYWxzZSwiaWF0IjoxNzY4MzEyODU1LCJleHAiOjE3NjgzNDE2NTV9.q10i8FAtPDAF7ScWvvNyuVpKYOB-gvlbwqmOoD4lMk0
+@EMPLOYEE_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTY2NTIyNDY2NWNlNzk2YjVkYzI0YzQiLCJuYW1lIjoiUmFtYUtyaXNobmEgUmVkZHkiLCJlbWFpbCI6InJhbWFrcmlzaG5hQGJhc2FudC5jb20iLCJvcmdhbmlzYXRpb25JZCI6IjY5NjI1YjI3YmI5NDRmMzU0NTYwNWVkNCIsIm9yZ2FuaXNhdGlvbk5hbWUiOiJCYXNhbnQgVGVjaG5vbG9naWVzIiwiaXNBZG1pbiI6ZmFsc2UsIm11c3RDaGFuZ2VQYXNzd29yZCI6ZmFsc2UsImlhdCI6MTc2ODg5MDEwMSwiZXhwIjoxNzY4OTE4OTAxfQ.o8SLQyk-fDRePMGXScxury9qSmvhCWUH93B7hiGyvKo
 
 
 ### Register Organisation + Admin (one-time)
@@ -33,8 +33,8 @@ POST {{BASE_URL}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "mahendra@gmail.com",
-  "password": "123456789"
+  "email": "ramakrishna@basant.com",
+  "password": "Rama@1975"
 }
 
 ###
@@ -310,4 +310,65 @@ Content-Type: application/json
 
 ### View my daily updates
 GET {{BASE_URL}}/api/daily-updates/my
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+
+
+###ADMIN – PROJECT APIs
+
+// Get All Projects (Admin)
+GET {{BASE_URL}}/api/projects
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+
+###Create Project (Admin)
+
+POST {{BASE_URL}}/api/projects
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "name": "New HRMS Project",
+  "description": "Core HRMS Development",
+  "status": "Active",
+  "startDate": "2025-01-01",
+  "endDate": "2025-06-30",
+  "teamId": "69625b27bb944f3545605ee9"
+}
+
+###Update Project (Admin – Full Update)
+
+PUT {{BASE_URL}}/api/projects/696650c6665ce796b5dc248b
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "name": "Updated Project Name",
+  "description": "Updated description",
+  "status": "Completed",
+  "startDate": "2025-01-01",
+  "endDate": "2025-08-31",
+  "teamId": "69625b27bb944f3545605ee9"
+}
+
+###Delete Project (Admin)
+DELETE {{BASE_URL}}/api/projects/69665120665ce796b5dc2499
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+
+### Get Project Details (Admin – Popup)
+GET {{BASE_URL}}/api/projects/696650c6665ce796b5dc248b/details
+Authorization: Bearer {{ADMIN_TOKEN}}
+
+### Get My Projects (Employee)
+
+GET {{BASE_URL}}/api/projects/my
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+
+### Get My Teams (Employee)
+GET http://localhost:5000/api/teams/my
+Authorization: Bearer {{EMPLOYEE_TOKEN}}
+
+### GET my todays attemdance (Employee)
+
+GET http://localhost:5000/api/attendance/my/today
 Authorization: Bearer {{EMPLOYEE_TOKEN}}
