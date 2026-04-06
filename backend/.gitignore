@@ -1,3 +1,4 @@
 # Environment variables
 .env.development
 .env.production
+node_modules/
