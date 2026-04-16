@@ -28,16 +28,20 @@ const seedData = async () => {
     console.log("Seeding WorkPulse sample data...");
 
     /* ================= ORGANISATION ================= */
-    const org = await Organisation.create({
-      name: "Basant Technologies",
-    });
+    let org = await Organisation.findOne({ name: "Basant Technologies" });
+
+    if (!org) {
+      org = await Organisation.create({
+        name: "Basant Technologies",
+      });
+    }
 
     /* ================= USERS ================= */
     const adminPassword = await bcrypt.hash("Admin@123", 10);
     const empPassword = await bcrypt.hash("Emp@123", 10);
 
     const admin = await User.create({
-      organisationId: org._id,
+      organisationId: org._id,  
       name: "Admin Prasanna",
       email: "admin@basant.com",
       passwordHash: adminPassword,

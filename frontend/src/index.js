@@ -2,10 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
+import { LoaderProvider } from "./context/LoaderContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <LoaderProvider> 
+      <App />
+    </LoaderProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -1,52 +1,60 @@
-import React, { useState, useContext} from "react"
-import { AuthContext } from "../context/AuthContext"
-import { useHistory, Link } from "react-router-dom"
-import { BASE_URL } from "../services/api"
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useHistory, Link } from "react-router-dom";
+import { BASE_URL } from "../services/api";
+import { useLoader } from "../context/LoaderContext";
 
 const Login = () => {
-    const history = useHistory()
-    const { login } = useContext(AuthContext);
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [errorMsg, setErrorMsg] = useState("")
+  const history = useHistory();
+  const { login } = useContext(AuthContext);
+  const { setLoading } = useLoader(); 
 
-    const handleLogin = async (event) => {
-        event.preventDefault()
-        setErrorMsg("");
-        try {
-            const url = `${BASE_URL}/api/auth/login`
-            const options = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            }
-            const response = await fetch(url, options)
-            const data = await response.json()
-            if (!response.ok) {
-                setErrorMsg(data.message || "Invalid credentials")
-                return
-            }
-            login(data.token);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-            if (data.mustChangePassword) {
-              history.push("/change-password");
-            } else {
-              history.push("/dashboard");
-            }
- 
-        }catch (error) {
-        setErrorMsg("Something went wrong")
-        }
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setErrorMsg("");
+    setLoading(true);
+
+    try {
+      const url = `${BASE_URL}/api/auth/login`;
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      };
+
+      const response = await fetch(url, options);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMsg(data.message || "Invalid credentials");
+        return;
+      }
+
+      login(data.token);
+
+      if (data.mustChangePassword) {
+        history.push("/change-password");
+      } else {
+        history.push("/dashboard");
+      }
+
+    } catch (error) {
+      setErrorMsg("Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-return (
+  };
+      return (
   <div
     className="container-fluid vh-100 d-flex align-items-center justify-content-center px-2"
     style={{ background: "#f3f6fa" }}
   >
     <div className="row bg-white shadow rounded-4 w-100 w-md-75 overflow-hidden">
 
-      {/* LEFT INFO PANEL (HIDDEN ON MOBILE) */}
       <div
         className="col-md-6 d-none d-md-flex flex-column justify-content-center p-5 text-white"
         style={{ backgroundColor: "#16558f" }}
@@ -66,14 +74,12 @@ return (
         </ul>
       </div>
 
-      {/* RIGHT LOGIN FORM */}
       <div className="col-12 col-md-6 p-4 p-md-5">
         <h4 className="fw-bold text-center mb-1">Login</h4>
         <p className="text-muted text-center mb-4 small">
           Sign in to access your organization workspace
         </p>
 
-        {/* MOBILE REGISTER LINK */}
         <div className="d-md-none text-center mb-3">
           <small className="text-muted">
             New organization?
@@ -115,7 +121,6 @@ return (
           </button>
         </form>
 
-        {/* DESKTOP REGISTER LINK */}
         <div className="text-center mt-3 d-none d-md-block">
           <span className="small text-muted">New organization?</span>
          <Link to="/register" className="ms-1">Register here</Link>
@@ -123,8 +128,7 @@ return (
       </div>
     </div>
   </div>
-);
+);  
+};
 
-}
-
-export default Login;
+export default Login

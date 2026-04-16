@@ -59,37 +59,35 @@ const getMyDailyUpdates = async (req, res) => {
   }
 };
 
-/**
- * ADMIN: All updates + summary + missing
- */
+// ADMIN: All updates + summary + missing
+
 const getAllDailyUpdates = async (req, res) => {
   try {
     const organisationId = req.user.organisationId;
     const today = getToday();
 
-    // all updates
     const updates = await DailyUpdate.find({
       organisationId
     })
       .populate("userId", "name email")
       .sort({ date: -1 });
 
-    // today updates
     const todayUpdates = await DailyUpdate.find({
       organisationId,
       date: today
-    });
+    }).populate("userId", "_id"); 
 
-    const submittedUserIds = todayUpdates.map(u => u.userId.toString());
+    const submittedUserIds = todayUpdates.map(
+      u => u.userId._id.toString()
+    );
 
-    // all employees
     const employees = await User.find({
       organisationId,
       isAdmin: false,
       status: "Active"
     });
 
-    // missing updates
+  
     const missing = employees.filter(
       e => !submittedUserIds.includes(e._id.toString())
     );

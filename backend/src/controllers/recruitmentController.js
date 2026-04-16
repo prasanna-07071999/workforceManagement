@@ -24,12 +24,17 @@ const createJob = async (req, res) => {
 };
 
 // ✅ GET JOBS WITH APPLICATION COUNT
+
+const mongoose = require("mongoose");
+
 const getJobs = async (req, res) => {
   try {
+    const orgId = new mongoose.Types.ObjectId(req.user.organisationId);
+
     const jobs = await Job.aggregate([
       {
         $match: {
-          organisationId: req.user.organisationId
+          organisationId: orgId
         }
       },
       {
@@ -60,6 +65,33 @@ const getJobs = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const updateJob = async (req, res) => {
+  try {
+    const job = await Job.findByIdAndUpdate(
+      req.params.jobId,
+      req.body,
+      { new: true }
+    );
+
+    res.json(job);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+const deleteJob = async (req, res) => {
+  try {
+    await Job.findByIdAndDelete(req.params.jobId);
+
+    res.json({ message: "Job deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 // ✅ ADD CANDIDATE
 const addCandidate = async (req, res) => {
@@ -150,5 +182,7 @@ module.exports = {
   addCandidate,
   updateCandidateStatus,
   getHiredCandidates,
-  updateJobStatus
+  updateJobStatus,
+  deleteJob,
+  updateJob
 }
