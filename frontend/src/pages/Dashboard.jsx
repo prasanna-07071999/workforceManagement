@@ -7,24 +7,24 @@ const Dashboard = () => {
   const token = localStorage.getItem("jwt");
   const user = token ? JSON.parse(atob(token.split(".")[1])) : null;
 
+  const [loading, setLoading] = useState(true);
   const isAdmin = user?.isAdmin;
 
   /* ================= STATE ================= */
 
   const [adminStats, setAdminStats] = useState({
     employees: "--",
-    teams: "--",
     projects: "--",
-    recruitment: "--",
     attendanceToday: "--",
     pendingLeaves: "--",
     todayUpdates: "--",
     attendanceSnapshot: {
-      present: "--",
-      absent: "--",
-      leave: "--",
+      present: 0,
+      absent: 0,
+      leave: 0,
     },
     pendingUpdates: "--",
+    recruitment: "--",
   });
 
   const [employeeStats, setEmployeeStats] = useState({
@@ -35,6 +35,8 @@ const Dashboard = () => {
     completedProjects: "--",
   });
 
+  const [recentUpdates, setRecentUpdates] = useState([]);
+
   /* ================= AUTH ================= */
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const Dashboard = () => {
     }
   }, [token, history]);
 
-  /* ================= ADMIN DASHBOARD ================= */
+  /* ================= ADMIN ================= */
 
   useEffect(() => {
     if (!isAdmin || !token) return;
@@ -54,7 +56,6 @@ const Dashboard = () => {
       try {
         const [
           statsRes,
-          teamsRes,
           projectsRes,
           jobsRes,
           attendanceRes,
@@ -62,7 +63,6 @@ const Dashboard = () => {
           updatesRes,
         ] = await Promise.all([
           fetch(`${BASE_URL}/api/stats/summary`, { headers }),
-          fetch(`${BASE_URL}/api/teams`, { headers }),
           fetch(`${BASE_URL}/api/projects`, { headers }),
           fetch(`${BASE_URL}/api/recruitment/jobs`, { headers }),
           fetch(`${BASE_URL}/api/attendance/summary`, { headers }),
@@ -71,42 +71,43 @@ const Dashboard = () => {
         ]);
 
         const stats = await statsRes.json();
-        const teams = await teamsRes.json();
         const projects = await projectsRes.json();
         const jobs = await jobsRes.json();
         const attendance = await attendanceRes.json();
         const leaves = await leavesRes.json();
         const updates = await updatesRes.json();
 
+        setRecentUpdates(updates.updates?.slice(0, 5) || []);
+
         const pendingLeaves = leaves.filter(l => l.status === "Pending").length;
-        console.log(attendance)
+
         setAdminStats({
           employees: stats.totalEmployees,
-          teams: teams.length,
           projects: projects.length,
-          recruitment: jobs.length,
+          recruitment: Array.isArray(jobs) ? jobs.length : 0,
           attendanceToday: attendance.present,
+
           pendingLeaves,
-          todayUpdates: updates.length,
+          todayUpdates: updates.summary?.submitted || 0,
           attendanceSnapshot: {
-            present: attendance.present,
-            absent: attendance.absent,
-            leave: attendance.onLeave,
+            present: attendance.present || 0,
+            absent: attendance.absent || 0,
+            leave: attendance.onLeave || 0,
           },
-          pendingUpdates: Math.max(
-            stats.totalEmployees - updates.length,
-            0
-          ),
+          pendingUpdates: updates.summary?.missing || 0,
         });
+
       } catch (err) {
-        console.error("Admin dashboard load failed", err);
+        console.error("Admin dashboard error", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadAdminDashboard();
   }, [isAdmin, token]);
 
-  /* ================= EMPLOYEE DASHBOARD ================= */
+  /* ================= EMPLOYEE ================= */
 
   useEffect(() => {
     if (isAdmin || !token) return;
@@ -129,142 +130,223 @@ const Dashboard = () => {
         const leaves = await leavesRes.json();
         const projects = await projectsRes.json();
 
-        const activeProject = Array.isArray(projects) ? projects.find(p => p.status === "Active"): null;
+        const activeProject = projects.find(p => p.status === "Active");
         const completedCount = projects.filter(p => p.status === "Completed").length;
 
         setEmployeeStats({
-          attendanceStatus: attendance ? attendance.status : "Not Marked",
+          attendanceStatus: attendance?.status || "Not Marked",
           myLeaves: leaves.length,
           myProjects: projects.length,
           currentProject: activeProject?.name || "--",
           completedProjects: completedCount,
         });
+
       } catch (err) {
-        console.error("Employee dashboard load failed", err);
+        console.error("Employee dashboard error", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadEmployeeDashboard();
   }, [isAdmin, token]);
 
-  /* ================= UI (UNCHANGED) ================= */
+  /* ================= LOADING ================= */
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "80vh" }}>
+        <div className="spinner-border text-primary" />
+      </div>
+    );
+  }
+
+  /* ================= DONUT FIX ================= */
+
+  const total =
+    adminStats.attendanceSnapshot.present +
+    adminStats.attendanceSnapshot.absent +
+    adminStats.attendanceSnapshot.leave || 1;
+
+  const presentDeg = (adminStats.attendanceSnapshot.present / total) * 360;
+  const absentDeg = (adminStats.attendanceSnapshot.absent / total) * 360;
+
+  /* ================= UI ================= */
 
   return (
-    <div className="container-fluid px-2 px-md-4 pb-4">
+    <div className="container-fluid px-3 py-3" style={{ background: "#f5f7fb", minHeight: "100vh" }}>
+
+      {/* HEADER */}
       <div className="mb-4">
         <h4 className="fw-bold">
-          Welcome{user?.name ? `, ${user.name}` : ""}
+          {getGreeting()}, {user?.name} 👋
         </h4>
-        <p className="text-muted mb-0">
-          {isAdmin
-            ? "Organization insights and operational overview"
-            : "Your daily work overview"}
-        </p>
+        <small className="text-muted">{new Date().toDateString()}</small>
       </div>
 
+      {/* ADMIN */}
       {isAdmin && (
         <>
-          <div className="row g-4 mb-4">
-            <InsightCard title="Employees" subtitle="Total workforce" value={adminStats.employees} icon="people-fill" color="primary" />
-            <InsightCard title="Teams" subtitle="Active teams" value={adminStats.teams} icon="collection-fill" color="success" />
-            <InsightCard title="Projects" subtitle="Active & completed" value={adminStats.projects} icon="briefcase-fill" color="warning" onClick={() => history.push("/projects")} />
-            <InsightCard title="Recruitment" subtitle="Open positions" value={adminStats.recruitment} icon="person-lines-fill" color="danger" onClick={() => history.push("/recruitment")} />
-            <InsightCard title="Attendance" subtitle="Today status" value={adminStats.attendanceToday} icon="calendar-check-fill" color="info" onClick={() => history.push("/attendance")} />
-            <InsightCard title="Leaves" subtitle="Pending approvals" value={adminStats.pendingLeaves} icon="calendar-event-fill" color="secondary" onClick={() => history.push("/leaves")} />
-            <InsightCard title="Daily Updates" subtitle="Today submissions" value={adminStats.todayUpdates} icon="clipboard-check-fill" color="dark" onClick={() => history.push("/daily-updates")} />
+          <div className="row g-3 mb-4">
+            <GradientCard title="Employees" value={adminStats.employees} color="blue" />
+            <GradientCard title="Projects" value={adminStats.projects} color="green" />
+            <GradientCard title="Attendance" value={adminStats.attendanceToday} color="yellow" />
+            <GradientCard title="Leaves" value={adminStats.pendingLeaves} color="teal" />
+            <GradientCard title="Jobs" value={adminStats.recruitment} color="purple" />
           </div>
 
           <div className="row g-4">
-            <div className="col-12 col-lg-6">
-              <ClickablePanel
-                title="Today’s Attendance Snapshot"
-                subtitle="Organization-wide"
-                items={[
-                  `Present: ${adminStats.attendanceSnapshot.present}`,
-                  `Absent: ${adminStats.attendanceSnapshot.absent}`,
-                  `On Leave: ${adminStats.attendanceSnapshot.leave}`,
-                ]}
-                onClick={() => history.push("/attendance")}
-              />
+
+            {/* LEFT */}
+            <div className="col-lg-8">
+
+              {/* DONUT */}
+              <div className="card shadow-sm rounded-4 p-3 mb-3">
+                <h6 className="fw-bold mb-3">Attendance Overview</h6>
+
+                <div className="d-flex align-items-center justify-content-between">
+
+                  <div
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: "50%",
+                      background: `conic-gradient(
+                        #28a745 ${presentDeg}deg,
+                        #dc3545 ${presentDeg + absentDeg}deg,
+                        #ffc107 360deg
+                      )`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    {adminStats.attendanceToday}
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-success">Present: {adminStats.attendanceSnapshot.present}</p>
+                    <p className="mb-1 text-danger">Absent: {adminStats.attendanceSnapshot.absent}</p>
+                    <p className="mb-0 text-warning">Leave: {adminStats.attendanceSnapshot.leave}</p>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* RECENT */}
+              <div className="card shadow-sm rounded-4 p-3">
+                <h6 className="fw-bold mb-3">Recent Activity</h6>
+
+                {recentUpdates.length === 0 ? (
+                  <p className="text-muted small">No recent activity</p>
+                ) : (
+                  recentUpdates.map((u) => (
+                    <div key={u._id} className="d-flex align-items-center mb-3">
+
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center me-2"
+                        style={{ width: 35, height: 35, background: "#e9ecef", fontWeight: "bold" }}
+                      >
+                        {u.userId?.name?.charAt(0) || "?"}
+                      </div>
+
+                      <div className="flex-grow-1">
+                        <div className="small">
+                          <b>{u.userId?.name}</b> worked on "{(u.description || "").slice(0, 20)}..."
+                        </div>
+                        <div className="text-muted small">{u.date}</div>
+                      </div>
+
+                    </div>
+                  ))
+                )}
+              </div>
+
             </div>
 
-            <div className="col-12 col-lg-6">
-              <ClickablePanel
-                title="Daily Updates Review"
-                subtitle="Employee submissions"
-                items={[
-                  `Submitted today: ${adminStats.todayUpdates}`,
-                  `Pending submissions: ${adminStats.pendingUpdates}`,
-                ]}
-                onClick={() => history.push("/daily-updates")}
-              />
+            {/* RIGHT */}
+            <div className="col-lg-4">
+
+              <div className="card shadow-sm rounded-4 p-3 mb-3">
+                <h6 className="fw-bold mb-3">Quick Actions</h6>
+
+                <ActionCard text="Add Employee" icon="person-fill" bg="#e7f1ff" color="#0d6efd" onClick={() => history.push("/employees")} />
+                <ActionCard text="Create Project" icon="briefcase-fill" bg="#e8f8f1" color="#198754" onClick={() => history.push("/projects")} />
+                <ActionCard text="Mark Attendance" icon="clock-fill" bg="#fff4e5" color="#fd7e14" onClick={() => history.push("/attendance")} />
+                <ActionCard text="Post Job" icon="file-earmark-text-fill" bg="#f3ecff" color="#6f42c1" onClick={() => history.push("/recruitment")} />
+
+              </div>
+
+              <div className="card shadow-sm rounded-4 p-3 mb-3">
+                <h6 className="fw-bold">Updates Summary</h6>
+                <p className="text-success mb-1">✔ Submitted: {adminStats.todayUpdates}</p>
+                <p className="text-danger mb-0">✖ Missing: {adminStats.pendingUpdates}</p>
+              </div>
+
             </div>
+
           </div>
         </>
       )}
 
+      {/* EMPLOYEE */}
       {!isAdmin && (
-        <>
-          <div className="row g-4 mb-4">
-            <InsightCard title="Attendance" subtitle="Today" value={employeeStats.attendanceStatus} icon="clock-fill" color="primary" onClick={() => history.push("/attendance")} />
-            <InsightCard title="My Leaves" subtitle="Requests" value={employeeStats.myLeaves} icon="calendar-check-fill" color="success" onClick={() => history.push("/leaves")} />
-            <InsightCard title="My Projects" subtitle="Assigned" value={employeeStats.myProjects} icon="briefcase-fill" color="warning" onClick={() => history.push("/projects")} />
-          </div>
-
-          <div className="row g-4">
-            <div className="col-12 col-lg-6">
-              <ClickablePanel
-                title="Today’s Checklist"
-                subtitle="Important"
-                items={["Mark attendance", "Submit daily update"]}
-                onClick={() => history.push("/daily-updates")}
-              />
-            </div>
-
-            <div className="col-12 col-lg-6">
-              <ClickablePanel
-                title="Project Overview"
-                subtitle="Your work"
-                items={[
-                  `Current project: ${employeeStats.currentProject}`,
-                  `Completed projects: ${employeeStats.completedProjects}`,
-                ]}
-                onClick={() => history.push("/projects")}
-              />
-            </div>
-          </div>
-        </>
+        <div className="row g-4">
+          <GradientCard title="Attendance" value={employeeStats.attendanceStatus} color="blue" />
+          <GradientCard title="Leaves" value={employeeStats.myLeaves} color="green" />
+          <GradientCard title="Projects" value={employeeStats.myProjects} color="yellow" />
+          <GradientCard title="Completed" value={employeeStats.completedProjects} color="teal" />
+        </div>
       )}
+
     </div>
   );
 };
 
-/* ================= REUSABLE (UNCHANGED) ================= */
+/* ================= COMPONENTS ================= */
 
-const InsightCard = ({ title, subtitle, value, icon, color, onClick }) => (
-  <div className="col-12 col-sm-6 col-md-3">
-    <div className="card shadow-sm h-100 p-md-3" style={{ cursor: onClick ? "pointer" : "default" }} onClick={onClick}>
-      <div className={`bg-${color}`} style={{ height: "4px" }} />
-      <div className="text-center p-2 p-md-3">
-        <i className={`bi bi-${icon} text-${color} fs-3`}></i>
-        <small className="text-muted d-block mt-2">{title}</small>
-        <h4 className="fw-bold mb-0">{value}</h4>
-        <small className="text-muted">{subtitle}</small>
+const GradientCard = ({ title, value, color }) => {
+  const colors = {
+    blue: "linear-gradient(135deg, #4facfe, #00f2fe)",
+    green: "linear-gradient(135deg, #43e97b, #38f9d7)",
+    yellow: "linear-gradient(135deg, #f6d365, #fda085)",
+    teal: "linear-gradient(135deg, #84fab0, #8fd3f4)",
+    purple: "linear-gradient(135deg, #a18cd1, #fbc2eb)"
+  };
+
+  return (
+    <div className="col-6 col-md-4 col-lg-2">
+      <div className="p-3 rounded-4 text-white shadow-sm" style={{ background: colors[color], minHeight: "90px" }}>
+        <h5 className="fw-bold">{value}</h5>
+        <small>{title}</small>
       </div>
     </div>
+  );
+};
+
+const ActionCard = ({ text, icon, bg, color, onClick }) => (
+  <div
+    className="d-flex align-items-center justify-content-between p-2 rounded-3 mb-2"
+    style={{ background: bg, cursor: "pointer" }}
+    onClick={onClick}
+  >
+    <div className="d-flex align-items-center gap-2">
+      <div className="p-2 rounded-3" style={{ background: color, color: "#fff" }}>
+        <i className={`bi bi-${icon}`}></i>
+      </div>
+      <span className="small fw-semibold">{text}</span>
+    </div>
+
+    <i className="bi bi-chevron-right"></i>
   </div>
 );
 
-const ClickablePanel = ({ title, subtitle, items, onClick }) => (
-  <div className="card shadow-sm p-3 h-100 p-md-3" style={{ cursor: "pointer" }} onClick={onClick}>
-    <h6 className="fw-bold mb-1">{title}</h6>
-    <small className="text-muted">{subtitle}</small>
-    <ul className="small mt-2 mb-0">
-      {items.map((item, index) => (
-        <li key={index}>{item}</li>
-      ))}
-    </ul>
-  </div>
-);
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 18) return "Good Afternoon";
+  return "Good Evening";
+};
 
 export default Dashboard;
