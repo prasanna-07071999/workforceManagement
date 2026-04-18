@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.dark-mode {
+  background-color: #111827 !important;
+  color: white !important;
+}
+
+.dark-mode .card {
+  background-color: #1f2937;
+  color: white;
+}

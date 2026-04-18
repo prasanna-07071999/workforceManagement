@@ -64,81 +64,46 @@ const Navbar = ({ onToggleSidebar }) => {
         </h5>
       </div>
 
-      {/* RIGHT */}
-      <div className="position-relative" ref={menuRef}>
+      <div className="d-flex align-items-center gap-3 position-relative" ref={menuRef}>
 
-        {/* PROFILE ICON */}
-        <div
-          onClick={() => setOpen(!open)}
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: "50%",
-            background: "#374151",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-        >
-          {user.name?.charAt(0).toUpperCase()}
-        </div>
-        
-        {/* DROPDOWN */}
-        {open && (
-          <div
-            className="position-absolute end-0 mt-2 p-3 shadow rounded-3"
-            style={{
-              width: 250,
-              background: "#fff",
-              color: "#000",
-              zIndex: 1000
-            }}
-          >
+      {/* 🔔 NOTIFICATION */}
+      <i
+        className="bi bi-bell fs-5"
+        style={{ cursor: "pointer" }}
+        title="Notifications"
+        onClick={() => alert("Notifications coming soon")}
+      ></i>
 
-            {/* USER INFO */}
-            <div className="mb-2">
-              <div className="fw-bold">{user.name}</div>
-              <div className="small text-muted">{user.email}</div>
-            </div>
+      {/* 🌙 THEME TOGGLE */}
+      <i
+        className="bi bi-moon fs-5"
+        style={{ cursor: "pointer" }}
+        title="Toggle Theme"
+        onClick={() => {
+          document.body.classList.toggle("dark-mode");
+        }}
+      ></i>
 
-            <hr className="my-2" />
-
-            {/* ORG */}
-            <div className="mb-2">
-              <span className="badge bg-secondary">
-                {user.organisationName}
-              </span>
-            </div>
-
-            {/* ROLE */}
-            <div className="mb-2">
-              <span className="badge bg-dark">
-                {user.isAdmin ? "Administrator" : "Employee"}
-              </span>
-            </div>
-
-            <hr className="my-2" />
-
-            {/* ACTIONS */}
-            <button
-              className="btn btn-outline-primary btn-sm w-100 mb-2"
-              onClick={() => history.push("/change-password")}
-            >
-              Change Password
-            </button>
-
-            <button
-              className="btn btn-danger btn-sm w-100"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-
-          </div>
-        )}
+      {/* 👤 PROFILE ICON */}
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          width: 38,
+          height: 38,
+          borderRadius: "50%",
+          background: "#374151",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          fontWeight: "bold"
+        }}
+      >
+        {user.name?.charAt(0).toUpperCase()}
       </div>
+
+</div>
+
     </nav>
   );
 };

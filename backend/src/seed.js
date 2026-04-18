@@ -13,19 +13,13 @@ const Leave = require("./models/Leave");
 const Holiday = require("./models/Holiday");
 const Project = require("./models/Projects");
 const ProjectMember = require("./models/ProjectMember");
-const Recruitment = require("./models/Job");
+const Job = require("./models/Job");
 const DailyUpdate = require("./models/DialyUpdate");
 
 /* ================= SEED ================= */
 const seedData = async () => {
   try {
-    const orgCount = await Organisation.countDocuments();
-    if (orgCount > 0) {
-      console.log("Seed skipped! Data already exists.");
-      return;
-    }
-
-    console.log("Seeding WorkPulse sample data...");
+    console.log("🌱 Seeding WorkPulse data...");
 
     /* ================= ORGANISATION ================= */
     let org = await Organisation.findOne({ name: "Basant Technologies" });
@@ -34,228 +28,241 @@ const seedData = async () => {
       org = await Organisation.create({
         name: "Basant Technologies",
       });
+      console.log("✅ Organisation created");
     }
 
     /* ================= USERS ================= */
     const adminPassword = await bcrypt.hash("Admin@123", 10);
     const empPassword = await bcrypt.hash("Emp@123", 10);
 
-    const admin = await User.create({
-      organisationId: org._id,  
-      name: "Admin Prasanna",
-      email: "admin@basant.com",
-      passwordHash: adminPassword,
-      isAdmin: true,
-      mustChangePassword: false,
-      status: "Active",
-    });
+    const usersData = [
+      {
+        name: "Admin Prasanna",
+        email: "admin@basant.com",
+        isAdmin: true,
+        passwordHash: adminPassword,
+      },
+      {
+        name: "Arjun Reddy",
+        email: "arjun@basant.com",
+        isAdmin: false,
+        passwordHash: empPassword,
+      },
+      {
+        name: "Sai Kumar",
+        email: "sai@basant.com",
+        isAdmin: false,
+        passwordHash: empPassword,
+        mustChangePassword: true,
+      },
+      {
+        name: "Prakash Reddy",
+        email: "prakash@basant.com",
+        isAdmin: false,
+        passwordHash: empPassword,
+      },
+    ];
 
-    const empUser1 = await User.create({
-      organisationId: org._id,
-      name: "Arjun Reddy",
-      email: "arjun@basant.com",
-      passwordHash: empPassword,
-      isAdmin: false,
-      mustChangePassword: false,
-      status: "Active",
-    });
+    const createdUsers = {};
 
-    const empUser2 = await User.create({
-      organisationId: org._id,
-      name: "Sai Kumar",
-      email: "sai@basant.com",
-      passwordHash: empPassword,
-      isAdmin: false,
-      mustChangePassword: true,
-      status: "Active",
-    });
+    for (let u of usersData) {
+      let user = await User.findOne({ email: u.email });
 
-    const empUser3 = await User.create({
-      organisationId: org._id,
-      name: "Prakash Reddy",
-      email: "prakash@basant.com",
-      passwordHash: empPassword,
-      isAdmin: false,
-      mustChangePassword: false,
-      status: "Active",
-    });
+      if (!user) {
+        user = await User.create({
+          organisationId: org._id,
+          name: u.name,
+          email: u.email,
+          passwordHash: u.passwordHash,
+          isAdmin: u.isAdmin,
+          mustChangePassword: u.mustChangePassword || false,
+          status: "Active",
+        });
+        console.log(`✅ User created: ${u.email}`);
+      }
+
+      createdUsers[u.email] = user;
+    }
 
     /* ================= EMPLOYEES ================= */
-    const emp1 = await Employee.create({
-      organisationId: org._id,
-      firstName: "Arjun",
-      lastName: "Reddy",
-      email: "arjun@basant.com",
-      phone: "9000112233",
-    });
+    const employeesData = [
+      { firstName: "Arjun", lastName: "Reddy", email: "arjun@basant.com" },
+      { firstName: "Sai", lastName: "Kumar", email: "sai@basant.com" },
+      { firstName: "Prakash", lastName: "Reddy", email: "prakash@basant.com" },
+    ];
 
-    const emp2 = await Employee.create({
-      organisationId: org._id,
-      firstName: "Sai",
-      lastName: "Kumar",
-      email: "sai@basant.com",
-      phone: "9001122445",
-    });
+    const createdEmployees = {};
 
-    const emp3 = await Employee.create({
-      organisationId: org._id,
-      firstName: "Prakash",
-      lastName: "Reddy",
-      email: "prakash@basant.com",
-      phone: "9876543210",
-    });
+    for (let e of employeesData) {
+      let emp = await Employee.findOne({ email: e.email });
+
+      if (!emp) {
+        emp = await Employee.create({
+          organisationId: org._id,
+          ...e,
+          phone: "9999999999",
+        });
+      }
+
+      createdEmployees[e.email] = emp;
+    }
 
     /* ================= TEAMS ================= */
-    const devTeam = await Team.create({
-      organisationId: org._id,
-      name: "Development",
-      description: "Application development and maintenance",
-    });
+    const teamNames = ["Development", "HR", "Sales"];
+    const createdTeams = {};
 
-    const hrTeam = await Team.create({
-      organisationId: org._id,
-      name: "HR",
-      description: "Human resources team",
-    });
+    for (let name of teamNames) {
+      let team = await Team.findOne({ name });
 
-    const salesTeam = await Team.create({
-      organisationId: org._id,
-      name: "Sales",
-      description: "Sales & marketing team",
-    });
+      if (!team) {
+        team = await Team.create({
+          organisationId: org._id,
+          name,
+          description: `${name} Team`,
+        });
+        console.log(`✅ Team created: ${name}`);
+      }
 
-    await EmployeeTeam.insertMany([
-      { employeeId: emp1._id, teamId: devTeam._id },
-      { employeeId: emp2._id, teamId: hrTeam._id },
-      { employeeId: emp3._id, teamId: salesTeam._id },
-    ]);
+      createdTeams[name] = team;
+    }
 
-    /* ================= HOLIDAYS ================= */
-    await Holiday.insertMany([
-      { organisationId: org._id, date: "2025-01-26", name: "Republic Day" },
-      { organisationId: org._id, date: "2025-08-15", name: "Independence Day" },
-      { organisationId: org._id, date: "2025-10-02", name: "Gandhi Jayanthi" },
-    ]);
+    /* ================= TEAM MEMBERS ================= */
+    const mappings = [
+      { emp: "arjun@basant.com", team: "Development" },
+      { emp: "sai@basant.com", team: "HR" },
+      { emp: "prakash@basant.com", team: "Sales" },
+    ];
 
-    /* ================= ATTENDANCE ================= */
-    const today = new Date().toISOString().split("T")[0];
+    for (let m of mappings) {
+      const exists = await EmployeeTeam.findOne({
+        employeeId: createdEmployees[m.emp]._id,
+        teamId: createdTeams[m.team]._id,
+      });
 
-    await Attendance.insertMany([
-      {
-        organisationId: org._id,
-        userId: empUser1._id,
-        date: today,
-        status: "Present",
-        checkInTime: new Date(),
-        checkOutTime: new Date(),
-      },
-      {
-        organisationId: org._id,
-        userId: empUser2._id,
-        date: today,
-        status: "Leave",
-      },
-      {
-        organisationId: org._id,
-        userId: empUser3._id,
-        date: today,
-        status: "Present",
-        checkInTime: new Date(),
-        checkOutTime: new Date(),
-      },
-    ]);
-
-    /* ================= LEAVES ================= */
-    await Leave.insertMany([
-      {
-        organisationId: org._id,
-        userId: empUser2._id,
-        fromDate: "2025-01-05",
-        toDate: "2025-01-07",
-        reason: "Personal work",
-        status: "Approved",
-        approvedBy: admin._id,
-        approvedAt: new Date(),
-      },
-      {
-        organisationId: org._id,
-        userId: empUser3._id,
-        fromDate: "2025-01-12",
-        toDate: "2025-01-13",
-        reason: "Medical leave",
-        status: "Pending",
-      },
-    ]);
+      if (!exists) {
+        await EmployeeTeam.create({
+          employeeId: createdEmployees[m.emp]._id,
+          teamId: createdTeams[m.team]._id,
+        });
+      }
+    }
 
     /* ================= PROJECTS ================= */
-    const project1 = await Project.create({
-      organisationId: org._id,
-      name: "WorkPulse Platform",
-      status: "Active",
-      startDate: "2024-11-01",
-    });
+    const projectData = [
+      { name: "WorkPulse Platform", status: "Active" },
+      { name: "Internal HR Tool", status: "Completed" },
+    ];
 
-    const project2 = await Project.create({
-      organisationId: org._id,
-      name: "Internal HR Tool",
-      status: "Completed",
-      startDate: "2024-05-01",
-      endDate: "2024-09-30",
-    });
+    const createdProjects = {};
 
-    await ProjectMember.insertMany([
-      { projectId: project1._id, userId: empUser1._id },
-      { projectId: project1._id, userId: empUser3._id },
-      { projectId: project2._id, userId: empUser2._id },
-    ]);
+    for (let p of projectData) {
+      let proj = await Project.findOne({ name: p.name });
 
-    /* ================= RECRUITMENT ================= */
-    await Recruitment.insertMany([
+      if (!proj) {
+        proj = await Project.create({
+          organisationId: org._id,
+          name: p.name,
+          status: p.status,
+          startDate: new Date(),
+        });
+        console.log(`✅ Project created: ${p.name}`);
+      }
+
+      createdProjects[p.name] = proj;
+    }
+
+    /* ================= PROJECT MEMBERS ================= */
+    const projectMembers = [
+      { project: "WorkPulse Platform", user: "arjun@basant.com" },
+      { project: "WorkPulse Platform", user: "prakash@basant.com" },
+      { project: "Internal HR Tool", user: "sai@basant.com" },
+    ];
+
+    for (let pm of projectMembers) {
+      const exists = await ProjectMember.findOne({
+        projectId: createdProjects[pm.project]._id,
+        userId: createdUsers[pm.user]._id,
+      });
+
+      if (!exists) {
+        await ProjectMember.create({
+          projectId: createdProjects[pm.project]._id,
+          userId: createdUsers[pm.user]._id,
+        });
+      }
+    }
+
+    /* ================= JOBS ================= */
+    const jobsData = [
       {
-        organisationId: org._id,
-        name: "Ravi Teja",
-        email: "ravi@gmail.com",
         title: "Frontend Developer",
-        status: "Open"
+        requiredSkills: ["React", "JavaScript"],
+        qualifications: "Any Degree",
+        status: "Open",
       },
       {
-        organisationId: org._id,
-        name: "Anusha",
-        email: "anusha@gmail.com",
         title: "HR Executive",
-        status: "Closed"
+        requiredSkills: ["Communication"],
+        qualifications: "MBA HR",
+        status: "Closed",
+      },
+    ];
+
+    for (let j of jobsData) {
+      const exists = await Job.findOne({ title: j.title });
+
+      if (!exists) {
+        await Job.create({
+          organisationId: org._id,
+          ...j,
+        });
+        console.log(`✅ Job created: ${j.title}`);
       }
-    ]);
+    }
 
     /* ================= DAILY UPDATES ================= */
-    await DailyUpdate.insertMany([
+    const today = new Date().toISOString().split("T")[0];
+
+    const updates = [
       {
-        organisationId: org._id,
-        userId: empUser1._id,
-        date: today,
-        description: "Worked on attendance module and fixed bugs.",
+        user: "arjun@basant.com",
+        description: "Worked on dashboard UI",
       },
       {
-        organisationId: org._id,
-        userId: empUser3._id,
-        date: today,
-        description: "Implemented recruitment APIs and validations.",
+        user: "prakash@basant.com",
+        description: "Fixed backend bugs",
       },
-    ]);
+    ];
+
+    for (let u of updates) {
+      const exists = await DailyUpdate.findOne({
+        userId: createdUsers[u.user]._id,
+        date: today,
+      });
+
+      if (!exists) {
+        await DailyUpdate.create({
+          organisationId: org._id,
+          userId: createdUsers[u.user]._id,
+          date: today,
+          description: u.description,
+        });
+      }
+    }
 
     /* ================= LOG ================= */
     await Log.create({
       organisationId: org._id,
-      userId: admin._id,
+      userId: createdUsers["admin@basant.com"]._id,
       action: "SEED_COMPLETED",
       event: "SYSTEM",
       status: 201,
       ip: "127.0.0.1",
     });
 
-    console.log("WorkPulse seed completed successfully");
-  } catch (error) {
-    console.error("Seed error:", error.message);
+    console.log("🎉 SEED COMPLETED SUCCESSFULLY");
+  } catch (err) {
+    console.error("❌ Seed Error:", err.message);
   }
 };
 
