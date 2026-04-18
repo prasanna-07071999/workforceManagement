@@ -47,6 +47,7 @@ const seedData = async () => {
         email: "arjun@basant.com",
         isAdmin: false,
         passwordHash: empPassword,
+        mustChangePassword: true,
       },
       {
         name: "Sai Kumar",
@@ -60,6 +61,7 @@ const seedData = async () => {
         email: "prakash@basant.com",
         isAdmin: false,
         passwordHash: empPassword,
+        mustChangePassword: true,
       },
     ];
 
@@ -87,7 +89,7 @@ const seedData = async () => {
     /* ================= EMPLOYEES ================= */
     const employeesData = [
       { firstName: "Arjun", lastName: "Reddy", email: "arjun@basant.com" },
-      { firstName: "Sai", lastName: "Kumar", email: "sai@basant.com" },
+      { firstName: "Sai", lastName: "Kumar", email: "sai@basant.com" },//Sai@1999
       { firstName: "Prakash", lastName: "Reddy", email: "prakash@basant.com" },
     ];
 
