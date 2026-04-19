@@ -1,7 +1,8 @@
 const dotenv = require("dotenv");
 const path = require("path");
 
-if (process.env.NODE_ENV !== "production") {
+// Load env
+if (true) {
   dotenv.config({ path: path.join(__dirname, ".env.development") });
   console.log("Loaded environment: .env.development");
 } else {
@@ -16,28 +17,39 @@ const PORT = process.env.PORT || 5000;
 
 // Safety checks
 if (!process.env.MONGO_URI) {
-  console.error("MongoURI not set");
+  console.error("❌ MONGO_URI not set");
   process.exit(1);
 }
 
 if (!process.env.JWT_SECRET) {
-  console.error("JWT_SECRET not set");
+  console.error("❌ JWT_SECRET not set");
   process.exit(1);
 }
 
 const startServer = async () => {
-  try {
-    await connectDB();
+    try {
+      await connectDB();
+      console.log("✅ Database connected");
 
-    await seedData();
+      // ✅ AUTO-SEED LOGIC (BEST PRACTICE)
+      const Organisation = require("./src/models/Organisation");
+      const orgCount = await Organisation.countDocuments();
 
-    app.listen(PORT, () => {
-      console.log(`WorkPulse is running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Server Startup Failed:", error.message);
-    process.exit(1);
-  }
-};
+      if (orgCount === 0) {
+        console.log("🌱 No data found → Running seed...");
+        await seedData();
+      } else {
+        console.log("✅ Data already exists → Skipping seed");
+      }
+
+      app.listen(PORT, () => {
+        console.log(`🚀 WorkPulse running on port ${PORT}`);
+      });
+
+    } catch (error) {
+      console.error("❌ Server Startup Failed:", error.message);
+      process.exit(1);
+    }
+  };
 
 startServer();
