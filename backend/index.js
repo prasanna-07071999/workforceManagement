@@ -31,17 +31,16 @@ const startServer = async () => {
       await connectDB();
       console.log("✅ Database connected");
 
-      // ✅ AUTO-SEED LOGIC (BEST PRACTICE)
-      const Organisation = require("./src/models/Organisation");
-      const orgCount = await Organisation.countDocuments();
+      const User = require("./src/models/User");
 
-      if (orgCount === 0) {
-        console.log("🌱 No data found → Running seed...");
+      const userCount = await User.countDocuments();
+
+      if (userCount === 0) {
+        console.log("🌱 Running seed...");
         await seedData();
       } else {
-        console.log("✅ Data already exists → Skipping seed");
+        console.log("✅ Data exists, skipping seed");
       }
-
       app.listen(PORT, () => {
         console.log(`🚀 WorkPulse running on port ${PORT}`);
       });
