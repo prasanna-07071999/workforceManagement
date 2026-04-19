@@ -28,6 +28,7 @@ const Login = () => {
 
       const response = await fetch(url, options);
       const data = await response.json();
+      localStorage.setItem("jwt", data.token);
 
       if (!response.ok) {
         setErrorMsg(data.message || "Invalid credentials");

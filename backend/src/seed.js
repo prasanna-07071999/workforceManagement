@@ -96,18 +96,21 @@ const seedData = async () => {
     const createdEmployees = {};
 
     for (let e of employeesData) {
-      let emp = await Employee.findOne({ email: e.email });
+  let emp = await Employee.findOne({ email: e.email });
 
-      if (!emp) {
-        emp = await Employee.create({
-          organisationId: org._id,
-          ...e,
-          phone: "9999999999",
-        });
-      }
+  if (!emp) {
+    console.log("👉 Creating employee:", e.email);
 
-      createdEmployees[e.email] = emp;
-    }
+    emp = await Employee.create({
+      organisationId: org._id,
+      userId: createdUsers[e.email]._id,
+      ...e,
+      phone: "9999999999",
+    });
+  }
+
+  createdEmployees[e.email] = emp;
+}
 
     /* ================= TEAMS ================= */
     const teamNames = ["Development", "HR", "Sales"];
@@ -151,27 +154,29 @@ const seedData = async () => {
 
     /* ================= PROJECTS ================= */
     const projectData = [
-      { name: "WorkPulse Platform", status: "Active" },
-      { name: "Internal HR Tool", status: "Completed" },
+      { name: "WorkPulse Platform", status: "Active", team: "Development" },
+      { name: "Internal HR Tool", status: "Completed", team: "HR"},
     ];
 
     const createdProjects = {};
 
     for (let p of projectData) {
-      let proj = await Project.findOne({ name: p.name });
+  let proj = await Project.findOne({ name: p.name });
 
-      if (!proj) {
-        proj = await Project.create({
-          organisationId: org._id,
-          name: p.name,
-          status: p.status,
-          startDate: new Date(),
-        });
-        console.log(`✅ Project created: ${p.name}`);
-      }
+  if (!proj) {
+    proj = await Project.create({
+      organisationId: org._id,
+      name: p.name,
+      status: p.status,
+      startDate: new Date(),
+      teamId: createdTeams[p.team]._id,
+    });
 
-      createdProjects[p.name] = proj;
-    }
+    console.log(`✅ Project created: ${p.name}`);
+  }
+
+  createdProjects[p.name] = proj;
+}
 
     /* ================= PROJECT MEMBERS ================= */
     const projectMembers = [

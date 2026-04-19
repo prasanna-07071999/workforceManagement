@@ -27,28 +27,18 @@ if (!process.env.JWT_SECRET) {
 }
 
 const startServer = async () => {
-    try {
-      await connectDB();
-      console.log("✅ Database connected");
+  try {
+    await connectDB();
 
-      const User = require("./src/models/User");
+    console.log("Running seed...");
+    await seedData();
 
-      const userCount = await User.countDocuments();
-
-      if (userCount === 0) {
-        console.log("🌱 Running seed...");
-        await seedData();
-      } else {
-        console.log("✅ Data exists, skipping seed");
-      }
-      app.listen(PORT, () => {
-        console.log(`🚀 WorkPulse running on port ${PORT}`);
-      });
-
-    } catch (error) {
-      console.error("❌ Server Startup Failed:", error.message);
-      process.exit(1);
-    }
-  };
-
+    app.listen(PORT, () => {
+      console.log(` WorkPulse running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server Startup Failed:", error.message);
+    process.exit(1);
+  }
+};
 startServer();

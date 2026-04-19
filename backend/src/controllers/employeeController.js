@@ -31,11 +31,6 @@ const getEmployeeById = async (req, res) => {
 
 const createEmployee = async (req, res) => {
   try {
-
-    if (!req.body) {
-      return res.status(400).json({ message: "Request body is missing" });
-    }
-
     const { firstName, lastName, email, phone, password } = req.body;
 
     if (!req.user || !req.user.organisationId) {
@@ -43,35 +38,49 @@ const createEmployee = async (req, res) => {
     }
 
     if (!firstName || !lastName || !email) {
-      return res.status(400).json({ 
-        message: "firstName, lastName & email required" 
+      return res.status(400).json({
+        message: "firstName, lastName & email required"
       });
     }
 
-    if (password.length < 6) {
-          return res.status(400).json({
-            message: "Password must be at least 6 characters"
-          });
-        }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ message: "User with this email already exists" });
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters"
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const organisationId = req.user.organisationId;
 
-    const user = await User.create({
-      organisationId: req.user.organisationId,
-      name: `${firstName} ${lastName}`,
-      email,
-      passwordHash: hashedPassword,
-      isAdmin: false,
-      mustChangePassword: true
-    });
+    // ✅ 1. CHECK EMPLOYEE (NOT USER)
+    const existingEmployee = await Employee.findOne({ email });
 
+    if (existingEmployee) {
+      return res.status(409).json({
+        message: "Employee already exists"
+      });
+    }
+
+    // ✅ 2. CHECK USER
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      user = await User.create({
+        organisationId,
+        name: `${firstName} ${lastName}`,
+        email,
+        passwordHash: hashedPassword,
+        isAdmin: false,
+        mustChangePassword: true,
+        status: "Active"
+      });
+    }
+
+    // ✅ 3. CREATE EMPLOYEE (WITH userId)
     const employee = await Employee.create({
-      organisationId: req.user.organisationId,
+      organisationId,
+      userId: user._id,   // 🔥 VERY IMPORTANT FIX
       firstName,
       lastName,
       email,
@@ -85,12 +94,14 @@ const createEmployee = async (req, res) => {
       status: 201
     });
 
-    res.status(201).json({
-      employee,
-    });
+    res.status(201).json(employee);
+
   } catch (err) {
     console.error("createEmployee:", err);
-    res.status(500).json({ message: "Failed to Create Employee", error: err.message });
+    res.status(500).json({
+      message: "Failed to Create Employee",
+      error: err.message
+    });
   }
 };
 
